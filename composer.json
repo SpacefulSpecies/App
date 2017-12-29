@@ -1,4 +1,13 @@
 {
     "name": "species/app",
-    "require": {}
+    "type": "library",
+
+    "require": {
+        "slim/slim": "^3.9",
+        "php-di/php-di": "^5.4",
+        "php-di/slim-bridge": "^1.1",
+        "doctrine/cache": "^1.7",
+
+        "php": "^7.1"
+    }
 }
