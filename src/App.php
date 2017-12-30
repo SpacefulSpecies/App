@@ -6,12 +6,13 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Slim\App as Slim;
 use Species\App\AppEnvironment;
-use Species\App\ContainerBuilder;
+use Species\App\AppContainerBuilder;
+use Species\App\AppPathStructure;
 use Species\App\Exception\InvalidContainerConfig;
 use Species\App\Exception\UnableToRunApp;
 
 /**
- * Species app using Slim.
+ * App using Slim.
  */
 final class App
 {
@@ -28,9 +29,13 @@ final class App
      * @param string $rootPath
      * @throws UnableToRunApp
      */
-    public static function autoRunWithRootPath(string $rootPath): void
+    public static function runInRootPath(string $rootPath): void
     {
-        (new self(ContainerBuilder::buildForEnvironment(AppEnvironment::withRootPath($rootPath))))->run();
+        $container = AppContainerBuilder::autoBuild(
+            AppEnvironment::fromPhpEnv(),
+            AppPathStructure::withRootPath($rootPath)
+        );
+        (new self($container))->run();
     }
 
 

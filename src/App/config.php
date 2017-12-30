@@ -16,24 +16,28 @@ return [
     RouterInterface::class => \Di\get('router'),
     RequestInterface::class => \Di\get('request'),
 
-    # Twig view templates
-    Twig::class => function (Environment $env, RouterInterface $router, RequestInterface $request): Twig {
+    # Twig
+    Twig::class => function (Environment $env, PathStructure $paths, TwigExtension $extension): Twig {
 
         $debug = $env->inDebug();
-        $templatePath = $env->getResourcePath() . '/twig';
-        $cachePath = $env->hasCaching() ? $env->createCachePathFor('app.twig') : false;
+        $templatePath = $paths->getResourcePathFor('/twig');
+        $cachePath = $env->usesCaching() ? $paths->getCachePathFor('app.twig') : false;
 
         $twig = new Twig($templatePath, [
             'debug' => $debug,
             'cache' => $cachePath,
-            'strict_variables' => true,
             'autoescape' => 'html',
         ]);
 
-        $twig->addExtension(new TwigExtension($router, $request->getUri()));
-        $debug && $twig->addExtension(new Twig_Extension_Debug());
+        $twig->addExtension($extension);
+        if ($debug) {
+            $twig->addExtension(new Twig_Extension_Debug());
+        }
 
         return $twig;
+    },
+    TwigExtension::class => function (RouterInterface $router, RequestInterface $request): TwigExtension {
+        return new TwigExtension($router, $request->getUri());
     },
 
 ];
