@@ -33,11 +33,21 @@ final class App
      */
     public static function runInRootPath(string $rootPath): void
     {
-        $container = StandardContainerBuilder::buildFrom(
-            StandardEnvironment::fromPhpEnv(),
-            StandardPathStructure::withRootPath($rootPath)
-        );
-        (new self($container))->run();
+        self::fromContainer(
+            StandardContainerBuilder::buildFrom(
+                StandardEnvironment::fromPhpEnv(),
+                StandardPathStructure::withRootPath($rootPath)
+            )
+        )->run();
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @return self
+     */
+    public static function fromContainer(ContainerInterface $container): self
+    {
+        return new self($container);
     }
 
 
