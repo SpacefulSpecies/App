@@ -7,7 +7,7 @@ use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder as DIContainerBuilder;
 
 /**
- * Build container using PHP-DI with config provided from the environment.
+ * Container builder for the app using PHP-DI.
  *
  * @todo apc cache for PHP-DI
  */
@@ -15,9 +15,15 @@ final class ContainerBuilder
 {
 
     /** @const string */
-    const SLIM_DI_CONFIG_FILE = 'vendor/php-di/slim-bridge/src/config.php';
+    const SLIM_CONFIG_FILE = 'vendor/php-di/slim-bridge/src/config.php';
+
+    /** @const string */
+    const APP_CONFIG_FILE = __DIR__ . '/config.php';
 
 
+
+    /** @var DIContainerBuilder */
+    private $builder;
 
     /** @var Environment */
     private $environment;
@@ -40,76 +46,80 @@ final class ContainerBuilder
      */
     public function __construct(Environment $environment)
     {
+        $this->builder = new DIContainerBuilder();
+        $this->builder->useAutowiring(true);
+        $this->builder->useAnnotations(false);
+        $this->builder->ignorePhpDocErrors(true);
+
+        if ($environment->hasCaching()) {
+            $cachePath = $environment->createCachePathFor('app.container');
+            $this->builder->setDefinitionCache(new FilesystemCache($cachePath));
+            $this->builder->writeProxiesToFile(true, "$cachePath/container_proxies.cache");
+        }
+
         $this->environment = $environment;
+        $this->addDefinitions([Environment::class => $this->environment]);
+
+        $this->provideSlimConfig();
+        $this->provideAppConfig();
     }
 
 
+
+    /**
+     * @param mixed $definitions
+     */
+    public function addDefinitions($definitions): void
+    {
+        $this->builder->addDefinitions($definitions);
+    }
 
     /**
      * @return ContainerInterface
      */
     public function build(): ContainerInterface
     {
-        $builder = $this->createContainerBuilder();
-
-        $this->provideSlimConfig($builder);
-        $this->provideSpeciesConfig($builder);
-
-        return $builder->build();
+        return $this->builder->build();
     }
 
 
 
     /**
-     * @return DIContainerBuilder
+     * Provide Slim settings and services.
      */
-    private function createContainerBuilder(): DIContainerBuilder
+    private function provideSlimConfig(): void
     {
-        $builder = new DIContainerBuilder();
-        $builder->useAutowiring(true);
-        $builder->useAnnotations(false);
-        $builder->ignorePhpDocErrors(true);
-
-        if ($this->environment->hasCaching()) {
-            $cachePath = $this->environment->createCachePathFor('app.container');
-            $builder->setDefinitionCache(new FilesystemCache($cachePath));
-            $builder->writeProxiesToFile(true, "$cachePath/container_proxies.cache");
-        }
-
-        return $builder;
-    }
-
-    /**
-     * @param DIContainerBuilder $builder
-     */
-    private function provideSlimConfig(DIContainerBuilder $builder): void
-    {
-        $defaultSlimConfig = $this->environment->getRootPath() . '/' . self::SLIM_DI_CONFIG_FILE;
-
         $routerCacheFile = false;
         if ($this->environment->hasCaching()) {
             $routerCacheFile = $this->environment->createCachePathFor('app.router');
         }
 
-        $builder->addDefinitions($defaultSlimConfig);
-        $builder->addDefinitions([
+        $this->addDefinitions($this->environment->getRootPath() . '/' . self::SLIM_CONFIG_FILE);
+        $this->addDefinitions([
             'settings.displayErrorDetails' => $this->environment->inDebug(),
             'settings.routerCacheFile' => $routerCacheFile,
         ]);
     }
 
     /**
-     * @param DIContainerBuilder $builder
+     * Provide app settings and services.
      */
-    private function provideSpeciesConfig(DIContainerBuilder $builder): void
+    private function provideAppConfig(): void
     {
-        $appFile = __DIR__ . '/config.php';
-        $routesFile = $this->environment->getConfigPath() . '/routes.php';
-        $builder->addDefinitions($appFile);
-        $builder->addDefinitions($routesFile);
-        $builder->addDefinitions([
-            Environment::class => $this->environment,
-        ]);
+        $configPath = $this->environment->getConfigPath();
+        $envConfigPath = "$configPath/" . $this->environment->getName();
+
+        $files = [
+            self::APP_CONFIG_FILE,
+            "$configPath/routes.php",
+            "$envConfigPath/routes.php",
+        ];
+
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                $this->addDefinitions($file);
+            }
+        }
     }
 
 }
