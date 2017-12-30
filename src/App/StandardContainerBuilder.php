@@ -34,7 +34,7 @@ final class StandardContainerBuilder implements ContainerBuilder
 
 
     /** @inheritdoc */
-    public static function autoBuild(Environment $environment, PathStructure $pathStructure): ContainerInterface
+    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
     {
         return (new self($environment, $pathStructure))->build();
     }

@@ -31,7 +31,7 @@ final class App
      */
     public static function runInRootPath(string $rootPath): void
     {
-        $container = StandardContainerBuilder::autoBuild(
+        $container = StandardContainerBuilder::buildFrom(
             StandardEnvironment::fromPhpEnv(),
             StandardPathStructure::withRootPath($rootPath)
         );

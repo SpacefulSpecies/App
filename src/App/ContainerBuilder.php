@@ -17,7 +17,7 @@ interface ContainerBuilder
      * @param PathStructure $pathStructure
      * @return ContainerInterface
      */
-    public static function autoBuild(Environment $environment, PathStructure $pathStructure): ContainerInterface;
+    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface;
 
 
 
