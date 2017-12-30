@@ -2,6 +2,12 @@
     "name": "species/app",
     "type": "library",
 
+    "autoload": {
+        "psr-4": {
+            "Species\\": ["src/", "tests/"]
+        }
+    },
+
     "require": {
         "slim/slim": "^3.9",
         "php-di/php-di": "^5.4",
