@@ -1,6 +1,6 @@
 <?php
 
-namespace Species\App\Controller;
+namespace Species\App;
 
 use Psr\Http\Message\ResponseInterface;
 use Slim\Views\Twig;
