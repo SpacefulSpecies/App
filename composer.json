@@ -1,5 +1,6 @@
 {
     "name": "species/app",
+    "description": "Yet another Simple Application Framework",
     "type": "library",
 
     "autoload": {
