@@ -24,6 +24,8 @@ abstract class TwigViewController
         $this->twig = $twig;
     }
 
+
+
     /**
      * @param ResponseInterface $response
      * @param string            $template
