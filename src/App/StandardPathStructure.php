@@ -6,9 +6,9 @@ use Species\App\Exception\InvalidRootPath;
 use Species\App\Exception\InvalidPath;
 
 /**
- * Path structure implementation.
+ * Standard path structure implementation.
  */
-final class AppPathStructure implements PathStructure
+final class StandardPathStructure implements PathStructure
 {
 
     /** @var string */

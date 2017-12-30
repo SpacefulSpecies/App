@@ -5,9 +5,9 @@ namespace Species;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Slim\App as Slim;
-use Species\App\AppEnvironment;
-use Species\App\AppContainerBuilder;
-use Species\App\AppPathStructure;
+use Species\App\StandardEnvironment;
+use Species\App\StandardContainerBuilder;
+use Species\App\StandardPathStructure;
 use Species\App\Exception\InvalidContainerConfig;
 use Species\App\Exception\UnableToRunApp;
 
@@ -31,9 +31,9 @@ final class App
      */
     public static function runInRootPath(string $rootPath): void
     {
-        $container = AppContainerBuilder::autoBuild(
-            AppEnvironment::fromPhpEnv(),
-            AppPathStructure::withRootPath($rootPath)
+        $container = StandardContainerBuilder::autoBuild(
+            StandardEnvironment::fromPhpEnv(),
+            StandardPathStructure::withRootPath($rootPath)
         );
         (new self($container))->run();
     }

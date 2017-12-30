@@ -5,9 +5,9 @@ namespace Species\App;
 use Species\App\Exception\InvalidEnvironmentName;
 
 /**
- * Environment implementation.
+ * Standard environment implementation.
  */
-final class AppEnvironment implements Environment
+final class StandardEnvironment implements Environment
 {
 
     /** @const string */

@@ -7,11 +7,11 @@ use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder as DIContainerBuilder;
 
 /**
- * Container builder for the app using PHP-DI.
+ * Standard container builder using PHP-DI.
  *
  * @todo apc cache for PHP-DI
  */
-final class AppContainerBuilder
+final class StandardContainerBuilder
 {
 
     /** @const string */
