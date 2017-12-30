@@ -4,6 +4,8 @@ namespace Species;
 
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App as Slim;
 use Species\App\StandardEnvironment;
 use Species\App\StandardContainerBuilder;
@@ -68,6 +70,21 @@ final class App
     {
         try {
             $this->slim->run();
+        } catch (\Exception $e) {
+            throw new UnableToRunApp($e);
+        }
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     * @return ResponseInterface
+     * @throws UnableToRunApp
+     */
+    public function process(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        try {
+            return $this->slim->process($request, $response);
         } catch (\Exception $e) {
             throw new UnableToRunApp($e);
         }
