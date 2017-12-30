@@ -36,7 +36,17 @@ final class StandardContainerBuilder implements ContainerBuilder
     /** @inheritdoc */
     public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
     {
-        return (new self($environment, $pathStructure))->build();
+        return self::from($environment, $pathStructure)->build();
+    }
+
+    /**
+     * @param Environment   $environment
+     * @param PathStructure $pathStructure
+     * @return self
+     */
+    public static function from(Environment $environment, PathStructure $pathStructure): self
+    {
+        return new self($environment, $pathStructure);
     }
 
 
