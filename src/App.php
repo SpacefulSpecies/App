@@ -46,6 +46,7 @@ final class App
 
         try {
 
+            $this->provideMiddleware($container->get('app.middleware'));
             $this->provideRoutes($container->get('app.routes'));
 
         } catch (ContainerExceptionInterface $e) {
@@ -68,6 +69,16 @@ final class App
     }
 
 
+
+    /**
+     * @param array $middlewares
+     */
+    private function provideMiddleware(array $middlewares): void
+    {
+        foreach ($middlewares as $middleware) {
+            $this->slim->add($middleware);
+        }
+    }
 
     /**
      * @param array  $routesConfig
