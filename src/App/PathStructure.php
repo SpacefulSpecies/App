@@ -3,7 +3,7 @@
 namespace Species\App;
 
 /**
- * Path structure for the app.
+ * Path structure interface for the app.
  */
 interface PathStructure
 {

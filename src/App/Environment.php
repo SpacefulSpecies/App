@@ -3,7 +3,7 @@
 namespace Species\App;
 
 /**
- * Environment interface for an app.
+ * Environment interface for the app.
  */
 interface Environment
 {

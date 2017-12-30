@@ -7,11 +7,11 @@ use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder as DIContainerBuilder;
 
 /**
- * Standard container builder using PHP-DI.
+ * Standard container builder implementation.
  *
  * @todo apc cache for PHP-DI
  */
-final class StandardContainerBuilder
+final class StandardContainerBuilder implements ContainerBuilder
 {
 
     /** @const string */
@@ -33,11 +33,7 @@ final class StandardContainerBuilder
 
 
 
-    /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
-     * @return ContainerInterface
-     */
+    /** @inheritdoc */
     public static function autoBuild(Environment $environment, PathStructure $pathStructure): ContainerInterface
     {
         return (new self($environment, $pathStructure))->build();
@@ -73,17 +69,13 @@ final class StandardContainerBuilder
 
 
 
-    /**
-     * @param mixed $definitions
-     */
+    /** @inheritdoc */
     public function addDefinitions($definitions): void
     {
         $this->builder->addDefinitions($definitions);
     }
 
-    /**
-     * @return ContainerInterface
-     */
+    /** @inheritdoc */
     public function build(): ContainerInterface
     {
         return $this->builder->build();
