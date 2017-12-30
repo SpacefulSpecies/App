@@ -103,7 +103,9 @@ final class ContainerBuilder
      */
     private function provideSpeciesConfig(DIContainerBuilder $builder): void
     {
+        $appFile = __DIR__ . '/config.php';
         $routesFile = $this->environment->getConfigPath() . '/routes.php';
+        $builder->addDefinitions($appFile);
         $builder->addDefinitions($routesFile);
         $builder->addDefinitions([
             Environment::class => $this->environment,
