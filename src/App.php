@@ -74,6 +74,16 @@ final class App
 
 
     /**
+     * @return ContainerInterface
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
+
+
+
+    /**
      * @throws UnableToRunApp
      */
     public function run(): void

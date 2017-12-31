@@ -3,7 +3,7 @@ Species App
 
 WIP!
 
-Yet another *Simple Application Framework*.
+Yet another Simple Application Framework.
 
 Glue for [Slim](https://github.com/slimphp/Slim) and [Twig](https://github.com/twigphp/Twig/),
 configured with [PHP-DI](https://github.com/PHP-DI/PHP-DI),
