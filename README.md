@@ -13,7 +13,15 @@ written in php 7.1!
 
 ## Installation
 
-@todo add to packagist, also with skeleton project.
+There is a [skeleton](https://github.com/SpacefulSpecies/AppSkeleton) if you want to start a new project:
+```bash
+composer create-project species/app-skeleton my-project-dir
+```
+
+Or use it as a library in your project:
+```bash
+composer require species/app
+```
 
 
 
