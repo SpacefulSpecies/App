@@ -91,7 +91,7 @@ $paths = StandardPathStructure::withRootPath('/path-to-app')
 echo $paths->getResourcePath(); // /path-to-app/data/assets
 ```
 
-The default PathStructure is:
+The default StandardPathStructure is:
 ```
 - project root
     - config
@@ -126,9 +126,9 @@ The `\Species\App\StandardContainerBuilder` will load these configurations in or
 - slim settings and services from config file used by [php-di/slim-bridge](https://github.com/PHP-DI/Slim-Bridge)
 - override slim settings with environment and path variables (debug, cache) 
 - app settings and services used by the framework (like Twig)
-- project config files (parameters, services, routes) from config path
-- override with environment specific project config files from {configPath}/{envName}
-- definitions added with ->addDefinition() in the order they were added.
+- config files from {configPath} in alphabetic order
+- environment specific config files from {configPath}/{envName} in alphabetic order
+- definitions added with ->addDefinition() in the order they were added
 
 
 
@@ -140,12 +140,13 @@ This is a `Slim` wrapper, using middleware and routes that are defined in the co
 $app = \Species\App::fromContainer($container);
 $app->run();
 ```
-
+Since it's build on Slim, it requires the slim settings and services defined in the container.
+If you used the StandardContainerBuilder, you don't have to worry about those.
 
 
 ## Twig
 
-Twig is included, but not required. There is a helper class `\Species\App\TwigViewController` to extend from:
+Twig is included, but optional to ise. There is also a helper class `\Species\App\TwigViewController` to extend from:
 ```php
 final class ExampleController extends \Species\App\TwigViewController
 {
@@ -170,10 +171,8 @@ The Twig environment is automatically configured for you:
 
 Config files resides in the config path from `PathStructure` using [PHP definitions](http://php-di.org/doc/php-definitions.html).
 
-There are three typical optional files that get loaded: `parameters.php`, `services.php` and `routes.php`.
-Each environment can optionally override those by putting config in a sub folder named by the environment, eg:
-`config/dev/parameters.yml`.
-You can load more files by adding them as definition when using the container builder.
+The StandardContainerBuilder will automatically load all config files from {configPath} and {configPath}/{envName}.
+You can load more files when using the container builder.
 
 
 ### Safety first
@@ -192,9 +191,9 @@ return [
 	'pdo.password' => '',
 ];
 
-// config/prod/parameters.php ignored in git
+// config/dev/parameters.php ignored in git
 return [
-	'pdo.username' => 'root',
+	'pdo.username' => 'dev',
 	'pdo.password' => '1234',
 ];
 
@@ -209,10 +208,10 @@ This also gives you the possibility to store different configurations on the sam
 To destroy the purpose of this topic:
 Ever been naughty for quickly testing production data on your local development machine?
 Just switch the environment name to override your container with other configurations,
-like connecting to you production database.
+like connecting to your production database.
 
 
-### Required container keys
+### Required container keys for Species\App
 
 #### (array) app.middleware
 An array of middleware used by the application. Can be left empty. Too bad it's not PSR-15... waiting on Slim 4.
