@@ -62,10 +62,12 @@ final class App
         $this->slim = new Slim($container);
 
         try {
-
-            $this->provideMiddleware($container->get('app.middleware'));
-            $this->provideRoutes($container->get('app.routes'));
-
+            if ($container->has('app.middleware')) {
+                $this->provideMiddleware($container->get('app.middleware'));
+            }
+            if ($container->has('app.routes')) {
+                $this->provideRoutes($container->get('app.routes'));
+            }
         } catch (ContainerExceptionInterface $e) {
             throw new InvalidContainerConfig($e);
         }
