@@ -139,14 +139,14 @@ $app = \Species\App::fromContainer($container);
 $app->run();
 ```
 Since it's build on Slim, it requires the slim settings and services defined in the container.
-If you make your own container, take a look in `\Species\App\StandardContainerBuilder` on how easy it this.
+If you make your own container, take a look in `\Species\App\StandardContainerBuilder` on how easy this is.
 
 
 ## Twig
 
-Twig is included, but optional to ise. There is also a helper class `\Species\App\TwigViewController` to extend from:
+Twig is included, but optional to use. There is also a helper class `\Species\App\TwigViewController` to extend from:
 ```php
-final class ExampleController extends \Species\App\TwigViewController
+final class SiteController extends \Species\App\TwigViewController
 {
     public function home(ResponseInterface $response, SomeService $service): ResponseInterface
     {
@@ -169,7 +169,7 @@ The Twig environment is automatically configured for you:
 
 Config files resides in the config path from `PathStructure` using [PHP definitions](http://php-di.org/doc/php-definitions.html).
 
-The StandardContainerBuilder will automatically load all config files from {configPath} and {configPath}/{envName}.
+The `StandardContainerBuilder` will automatically load all config files from {configPath} and {configPath}/{envName}.
 You can load more files when using the container builder.
 
 
@@ -182,14 +182,14 @@ Then create an environment specific configuration file, that you ignore in git, 
 
 An example to show how easy this is:
 ```php
-// config/parameters.php stored in git
+// config/db.php -- stored in git
 return [
 	'pdo.driver' => 'mysql',
 	'pdo.username' => '',
 	'pdo.password' => '',
 ];
 
-// config/dev/parameters.php ignored in git
+// config/dev/db.php -- ignored in git
 return [
 	'pdo.username' => 'dev',
 	'pdo.password' => '1234',
@@ -203,13 +203,13 @@ Your .gitignore rule can look like this:
 
 This also gives you the possibility to store different configurations on the same machine.
 
-To destroy the purpose of this topic:
+To destroy the purpose of this topics title:
 Ever been naughty for quickly testing production data on your local development machine?
 Just switch the environment name to override your container with other configurations,
 like connecting to your production database.
 
 
-### Required container keys for Species\App
+### Usable container keys for Species\App
 
 #### (array) app.middleware
 An array of middleware used by the application. Can be left empty. Too bad it's not PSR-15... waiting on Slim 4.
