@@ -37,12 +37,6 @@ final class StandardContainerBuilder implements ContainerBuilder
 
 
 
-    /** @inheritdoc */
-    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
-    {
-        return self::from($environment, $pathStructure)->build();
-    }
-
     /**
      * @param Environment   $environment
      * @param PathStructure $pathStructure
@@ -51,6 +45,16 @@ final class StandardContainerBuilder implements ContainerBuilder
     public static function from(Environment $environment, PathStructure $pathStructure): self
     {
         return new self($environment, $pathStructure);
+    }
+
+    /**
+     * @param Environment   $environment
+     * @param PathStructure $pathStructure
+     * @return ContainerInterface
+     */
+    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
+    {
+        return self::from($environment, $pathStructure)->build();
     }
 
 
