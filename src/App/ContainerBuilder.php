@@ -13,15 +13,6 @@ interface ContainerBuilder
 {
 
     /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
-     * @return ContainerInterface
-     */
-    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface;
-
-
-
-    /**
      * @param mixed $definitions
      */
     public function addDefinitions($definitions): void;

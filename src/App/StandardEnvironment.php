@@ -32,25 +32,19 @@ final class StandardEnvironment implements Environment
 
 
 
-    /**
-     * @return self
-     */
+    /** @return self */
     public static function forProduction(): self
     {
         return new self('prod', false, true);
     }
 
-    /**
-     * @return self
-     */
+    /** @return self */
     public static function forDevelopment(): self
     {
         return new self('dev', true, false);
     }
 
-    /**
-     * @return self
-     */
+    /** @return self */
     public static function fromPhpEnv(): self
     {
         return new self(
@@ -74,7 +68,7 @@ final class StandardEnvironment implements Environment
         $this->debug = $debug;
         $this->cache = $cache;
 
-        $this->guardValidName();
+        $this->guardName();
     }
 
 
@@ -108,7 +102,7 @@ final class StandardEnvironment implements Environment
     {
         $new = clone $this;
         $new->name = $name;
-        $new->guardValidName();
+        $new->guardName();
 
         return $new;
     }
@@ -164,7 +158,7 @@ final class StandardEnvironment implements Environment
     /**
      * @throws InvalidEnvironmentName
      */
-    private function guardValidName()
+    private function guardName()
     {
         if (preg_match('/^[\-\_a-z0-9]+$/i', $this->name) === 0) {
             throw new InvalidEnvironmentName($this->name);

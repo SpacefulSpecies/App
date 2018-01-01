@@ -14,7 +14,11 @@ use DI\ContainerBuilder as DIContainerBuilder;
 final class StandardContainerBuilder implements ContainerBuilder
 {
 
-    /** @const string */
+    /**
+     * Slim config file relative to app root path.
+     *
+     * @const string
+     */
     const SLIM_CONFIG_FILE = 'vendor/php-di/slim-bridge/src/config.php';
 
     /** @const string */
@@ -33,12 +37,6 @@ final class StandardContainerBuilder implements ContainerBuilder
 
 
 
-    /** @inheritdoc */
-    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
-    {
-        return self::from($environment, $pathStructure)->build();
-    }
-
     /**
      * @param Environment   $environment
      * @param PathStructure $pathStructure
@@ -47,6 +45,16 @@ final class StandardContainerBuilder implements ContainerBuilder
     public static function from(Environment $environment, PathStructure $pathStructure): self
     {
         return new self($environment, $pathStructure);
+    }
+
+    /**
+     * @param Environment   $environment
+     * @param PathStructure $pathStructure
+     * @return ContainerInterface
+     */
+    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
+    {
+        return self::from($environment, $pathStructure)->build();
     }
 
 
@@ -98,12 +106,16 @@ final class StandardContainerBuilder implements ContainerBuilder
      */
     private function provideSlimConfig(): void
     {
+        // slim config
+        $this->addDefinitions($this->paths->getRootPath() . '/' . self::SLIM_CONFIG_FILE);
+
+        // slim router caching
         $routerCacheFile = false;
         if ($this->env->usesCaching()) {
             $routerCacheFile = $this->paths->getCachePathFor($this->env->getName() . '/app.router');
         }
 
-        $this->addDefinitions($this->paths->getRootPath() . '/' . self::SLIM_CONFIG_FILE);
+        // override slim settings
         $this->addDefinitions([
             'settings.displayErrorDetails' => $this->env->inDebug(),
             'settings.routerCacheFile' => $routerCacheFile,
@@ -115,19 +127,19 @@ final class StandardContainerBuilder implements ContainerBuilder
      */
     private function provideAppConfig(): void
     {
+        // app config
+        $this->addDefinitions(self::APP_CONFIG_FILE);
+
+        // config files
         $configPath = $this->paths->getConfigPath();
+        foreach (glob("$configPath/*.php") as $file) {
+            $this->addDefinitions($file);
+        }
+
+        // environment specific config files
         $envConfigPath = $this->paths->getConfigPathFor($this->env->getName());
-
-        $files = [
-            self::APP_CONFIG_FILE,
-            "$configPath/routes.php",
-            "$envConfigPath/routes.php",
-        ];
-
-        foreach ($files as $file) {
-            if (file_exists($file)) {
-                $this->addDefinitions($file);
-            }
+        foreach (glob("$envConfigPath/*.php") as $file) {
+            $this->addDefinitions($file);
         }
     }
 
