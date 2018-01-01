@@ -14,14 +14,15 @@ use DI\ContainerBuilder as DIContainerBuilder;
 final class StandardContainerBuilder implements ContainerBuilder
 {
 
-    /** @const string */
-    const SLIM_SETTINGS_FILE = 'vendor/php-di/slim-bridge/src/config.php';
+    /**
+     * Slim config file relative to app root path.
+     *
+     * @const string
+     */
+    const SLIM_CONFIG_FILE = 'vendor/php-di/slim-bridge/src/config.php';
 
     /** @const string */
-    const APP_SETTINGS_FILE = __DIR__ . '/config.php';
-
-    /** @const array */
-    const APP_CONFIG_FILES = ['parameters.php', 'services.php', 'routes.php'];
+    const APP_CONFIG_FILE = __DIR__ . '/config.php';
 
 
 
@@ -101,8 +102,8 @@ final class StandardContainerBuilder implements ContainerBuilder
      */
     private function provideSlimConfig(): void
     {
-        // slim settings
-        $this->addDefinitions($this->paths->getRootPath() . '/' . self::SLIM_SETTINGS_FILE);
+        // slim config
+        $this->addDefinitions($this->paths->getRootPath() . '/' . self::SLIM_CONFIG_FILE);
 
         // slim router caching
         $routerCacheFile = false;
@@ -122,23 +123,19 @@ final class StandardContainerBuilder implements ContainerBuilder
      */
     private function provideAppConfig(): void
     {
-        // app settings
-        $this->addDefinitions(self::APP_SETTINGS_FILE);
-
-        $addFileIfExists = function (string $path): void {
-            file_exists($path) && $this->addDefinitions($path);
-        };
+        // app config
+        $this->addDefinitions(self::APP_CONFIG_FILE);
 
         // config files
         $configPath = $this->paths->getConfigPath();
-        foreach (self::APP_CONFIG_FILES as $file) {
-            $addFileIfExists("$configPath/$file");
+        foreach (glob("$configPath/*.php") as $file) {
+            $this->addDefinitions($file);
         }
 
-        // override project configuration for environment
+        // environment specific config files
         $envConfigPath = $this->paths->getConfigPathFor($this->env->getName());
-        foreach (self::APP_CONFIG_FILES as $file) {
-            $addFileIfExists("$envConfigPath/$file");
+        foreach (glob("$envConfigPath/*.php") as $file) {
+            $this->addDefinitions($file);
         }
     }
 
