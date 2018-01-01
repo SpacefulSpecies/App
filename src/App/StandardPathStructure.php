@@ -56,7 +56,7 @@ final class StandardPathStructure implements PathStructure
     {
         try {
             $this->rootPath = realpath($rootPath);
-            $this->guardValidPath($this->rootPath);
+            $this->assertPath($this->rootPath);
         } catch (\Throwable $e) {
             throw new InvalidRootPath();
         }
@@ -237,7 +237,7 @@ final class StandardPathStructure implements PathStructure
      * @param string $path
      * @throws InvalidPath
      */
-    private function guardValidPath(string $path): void
+    private function assertPath(string $path): void
     {
         // only allow absolute paths that are not system root
         if (substr($path, 0, 1) !== '/' || $path === '/') {
@@ -259,7 +259,7 @@ final class StandardPathStructure implements PathStructure
             $path = $this->rootPath . "/$path";
         }
 
-        $this->guardValidPath($path);
+        $this->assertPath($path);
 
         return $path;
     }
