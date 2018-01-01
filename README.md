@@ -1,8 +1,6 @@
 Species App
 ===========
 
-WIP!
-
 Yet another Simple Application Framework.
 
 Glue for [Slim](https://github.com/slimphp/Slim) and [Twig](https://github.com/twigphp/Twig/),
@@ -122,7 +120,7 @@ $builder->addDefinitions('/path/to/config/file');
 // build the container
 $container = $builder->build();
 ```
-The `\Species\App\StandardContainerBuilder` will load these configurations in order:
+The `StandardContainerBuilder` will load these configurations in order:
 - slim settings and services from config file used by [php-di/slim-bridge](https://github.com/PHP-DI/Slim-Bridge)
 - override slim settings with environment and path variables (debug, cache) 
 - app settings and services used by the framework (like Twig)
@@ -141,7 +139,7 @@ $app = \Species\App::fromContainer($container);
 $app->run();
 ```
 Since it's build on Slim, it requires the slim settings and services defined in the container.
-If you used the StandardContainerBuilder, you don't have to worry about those.
+If you make your own container, take a look in `\Species\App\StandardContainerBuilder` on how easy it this.
 
 
 ## Twig
