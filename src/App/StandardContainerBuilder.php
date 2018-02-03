@@ -91,11 +91,17 @@ final class StandardContainerBuilder implements ContainerBuilder
      */
     public function addDefinitionsFromPath(string $path): void
     {
-        $path = rtrim(trim($path), '/');
-        $files = is_dir($path) ? glob("$path/*.php") : [$path];
+        $path = realpath($path);
+        if (!$path) {
+            return;
+        }
 
-        foreach ($files as $file) {
-            $this->builder->addDefinitions($file);
+        if (is_dir($path)) {
+            foreach (glob("$path/*.php") as $file) {
+                $this->builder->addDefinitions($file);
+            }
+        } else {
+            $this->builder->addDefinitions($path);
         }
     }
 
