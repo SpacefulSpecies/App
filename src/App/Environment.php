@@ -3,7 +3,7 @@
 namespace Species\App;
 
 /**
- * Environment interface for the app.
+ * App environment interface.
  */
 interface Environment
 {
@@ -23,10 +23,10 @@ interface Environment
     public function inDebug(): bool;
 
     /**
-     * Whether the app environment uses caching.
+     * Whether the app environment has caching.
      *
      * @return bool
      */
-    public function usesCaching(): bool;
+    public function hasCaching(): bool;
 
 }

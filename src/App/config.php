@@ -21,7 +21,7 @@ return [
 
         $debug = $env->inDebug();
         $templatePath = $paths->getResourcePathFor('/twig');
-        $cachePath = $env->usesCaching() ? $paths->getCachePathFor('app.twig') : false;
+        $cachePath = $env->hasCaching() ? $paths->getCachePathFor('app.twig') : false;
 
         $twig = new Twig($templatePath, [
             'debug' => $debug,

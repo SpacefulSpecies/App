@@ -86,7 +86,7 @@ final class StandardEnvironment implements Environment
     }
 
     /** @inheritdoc */
-    public function usesCaching(): bool
+    public function hasCaching(): bool
     {
         return $this->cache;
     }

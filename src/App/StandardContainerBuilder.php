@@ -73,7 +73,7 @@ final class StandardContainerBuilder implements ContainerBuilder
         $this->builder->useAnnotations(false);
         $this->builder->ignorePhpDocErrors(true);
 
-        if ($this->env->usesCaching()) {
+        if ($this->env->hasCaching()) {
             $cachePath = $pathStructure->getCachePathFor($this->env->getName() . '/app.container');
             $this->builder->setDefinitionCache(new FilesystemCache($cachePath));
             $this->builder->writeProxiesToFile(true, "$cachePath/container_proxies.cache");
@@ -111,7 +111,7 @@ final class StandardContainerBuilder implements ContainerBuilder
 
         // slim router caching
         $routerCacheFile = false;
-        if ($this->env->usesCaching()) {
+        if ($this->env->hasCaching()) {
             $routerCacheFile = $this->paths->getCachePathFor($this->env->getName() . '/app.router');
         }
 
