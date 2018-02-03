@@ -12,10 +12,6 @@ use Twig_Extension_Debug;
 
 return [
 
-    # Aliases
-    RouterInterface::class => \Di\get('router'),
-    RequestInterface::class => \Di\get('request'),
-
     # Twig
     Twig::class => function (Environment $env, Paths $paths, TwigExtension $extension): Twig {
 

@@ -83,6 +83,12 @@ final class StandardEnvironment implements Environment
 
 
     /** @inheritdoc */
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
+    /** @inheritdoc */
     public function getName(): string
     {
         return $this->name;
