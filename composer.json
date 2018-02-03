@@ -11,6 +11,7 @@
     },
 
     "autoload-dev": {
+        "classmap": ["src/AppTest.php"],
         "psr-4": {
             "Species\\App": "tests/App"
         }
