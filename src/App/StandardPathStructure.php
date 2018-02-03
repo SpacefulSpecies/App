@@ -3,70 +3,125 @@
 namespace Species\App;
 
 use Species\App\Exception\InvalidRootPath;
-use Species\App\Exception\InvalidPath;
+use Species\App\Exception\InvalidAbsolutePath;
 
 /**
- * Standard path structure implementation.
+ * Standard app path structure implementation.
+ *
+ * @note Relative paths will be resolved from the root path.
  */
 final class StandardPathStructure implements PathStructure
 {
+
+    /** @const string */
+    const ENV_KEY_CONFIG_PATH = 'APP_CONFIG_PATH';
+
+    /** @const string */
+    const ENV_KEY_RESOURCE_PATH = 'APP_RESOURCE_PATH';
+
+    /** @const string */
+    const ENV_KEY_WEB_PATH = 'APP_WEB_PATH';
+
+    /** @const string */
+    const ENV_KEY_VAR_PATH = 'APP_VAR_PATH';
+
+    /** @const string */
+    const ENV_KEY_CACHE_PATH = 'APP_CACHE_PATH';
+
+    /** @const string */
+    const ENV_KEY_LOG_PATH = 'APP_LOG_PATH';
+
+
 
     /** @var string */
     private $rootPath;
 
     /** @var string */
-    private $configPath = 'config';
+    private $configPath;
 
     /** @var string */
-    private $resourcePath = 'resources';
+    private $resourcePath;
 
     /** @var string */
-    private $webPath = 'web';
+    private $webPath;
 
     /** @var string */
-    private $varPath = 'var';
+    private $varPath;
 
     /** @var string */
-    private $cachePath = 'var/cache';
+    private $cachePath;
 
     /** @var string */
-    private $logPath = 'var/logs';
+    private $logPath;
 
 
 
     /**
-     * Relative paths will be resolved from the root path.
-     *
      * @param string $rootPath
      * @return self
+     * @throws InvalidRootPath
+     * @throws InvalidAbsolutePath
      */
     public static function withRootPath(string $rootPath): self
     {
         return new self($rootPath);
     }
 
+    /**
+     * @param string $rootPath
+     * @return StandardPathStructure
+     * @throws InvalidRootPath
+     * @throws InvalidAbsolutePath
+     */
+    public static function fromPhpEnvWithRootPath(string $rootPath): self
+    {
+        return new self(
+            $rootPath,
+            getenv(self::ENV_KEY_CONFIG_PATH) ?: null,
+            getenv(self::ENV_KEY_RESOURCE_PATH) ?: null,
+            getenv(self::ENV_KEY_WEB_PATH) ?: null,
+            getenv(self::ENV_KEY_VAR_PATH) ?: null,
+            getenv(self::ENV_KEY_CACHE_PATH) ?: null,
+            getenv(self::ENV_KEY_LOG_PATH) ?: null
+        );
+    }
+
 
 
     /**
-     * @param string $rootPath
+     * @param string      $rootPath
+     * @param string|null $configPath   = null (default: '{rootPath}/config')
+     * @param string|null $resourcePath = null (default: '{rootPath}/resources')
+     * @param string|null $webPath      = null (default: '{rootPath}/web')
+     * @param string|null $varPath      = null (default: '{rootPath}/var')
+     * @param string|null $cachePath    = null (default: '{varPath}/cache')
+     * @param string|null $logPath      = null (default: '{varPath}/logs')
      * @throws InvalidRootPath
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
-    private function __construct(string $rootPath)
+    private function __construct(
+        string $rootPath,
+        ?string $configPath = null,
+        ?string $resourcePath = null,
+        ?string $webPath = null,
+        ?string $varPath = null,
+        ?string $cachePath = null,
+        ?string $logPath = null
+    )
     {
         try {
             $this->rootPath = realpath($rootPath);
-            $this->assertPath($this->rootPath);
+            $this->assertValidAbsolutePath($this->rootPath);
         } catch (\Throwable $e) {
-            throw new InvalidRootPath();
+            throw new InvalidRootPath($rootPath);
         }
 
-        $this->configPath = $this->resolvePath($this->configPath);
-        $this->resourcePath = $this->resolvePath($this->resourcePath);
-        $this->webPath = $this->resolvePath($this->webPath);
-        $this->varPath = $this->resolvePath($this->varPath);
-        $this->cachePath = $this->resolvePath($this->cachePath);
-        $this->logPath = $this->resolvePath($this->logPath);
+        $this->configPath = $this->resolvePath($configPath ?? 'config');
+        $this->resourcePath = $this->resolvePath($resourcePath ?? 'resources');
+        $this->webPath = $this->resolvePath($webPath ?? 'web');
+        $this->varPath = $this->resolvePath($varPath ?? 'var');
+        $this->cachePath = $this->resolvePath($cachePath ?? $this->getVarPathFor('cache'));
+        $this->logPath = $this->resolvePath($logPath ?? $this->getVarPathFor('logs'));
     }
 
 
@@ -116,39 +171,39 @@ final class StandardPathStructure implements PathStructure
 
 
     /** @inheritdoc */
-    public function getConfigPathFor(string $namespace): string
+    public function getConfigPathFor(string $path): string
     {
-        return $this->configPath . "/$namespace";
+        return $this->configPath . "/$path";
     }
 
     /** @inheritdoc */
-    public function getResourcePathFor(string $namespace): string
+    public function getResourcePathFor(string $path): string
     {
-        return $this->resourcePath . "/$namespace";
+        return $this->resourcePath . "/$path";
     }
 
     /** @inheritdoc */
-    public function getWebPathFor(string $namespace): string
+    public function getWebPathFor(string $path): string
     {
-        return $this->webPath . "/$namespace";
+        return $this->webPath . "/$path";
     }
 
     /** @inheritdoc */
-    public function getVarPathFor(string $namespace): string
+    public function getVarPathFor(string $path): string
     {
-        return $this->varPath . "/$namespace";
+        return $this->varPath . "/$path";
     }
 
     /** @inheritdoc */
-    public function getCachePathFor(string $namespace): string
+    public function getCachePathFor(string $path): string
     {
-        return $this->cachePath . "/$namespace";
+        return $this->cachePath . "/$path";
     }
 
     /** @inheritdoc */
-    public function getLogPathFor(string $namespace): string
+    public function getLogPathFor(string $path): string
     {
-        return $this->logPath . "/$namespace";
+        return $this->logPath . "/$path";
     }
 
 
@@ -156,7 +211,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $configPath
      * @return self
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
     public function withConfigPath(string $configPath): self
     {
@@ -169,7 +224,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $resourcePath
      * @return self
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
     public function withResourcePath(string $resourcePath): self
     {
@@ -182,7 +237,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $webPath
      * @return self
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
     public function withWebPath(string $webPath): self
     {
@@ -195,7 +250,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $varPath
      * @return self
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
     public function withVarPath(string $varPath): self
     {
@@ -208,7 +263,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $cachePath
      * @return self
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
     public function withCachePath(string $cachePath): self
     {
@@ -221,7 +276,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $logPath
      * @return self
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
     public function withLogPath(string $logPath): self
     {
@@ -235,20 +290,8 @@ final class StandardPathStructure implements PathStructure
 
     /**
      * @param string $path
-     * @throws InvalidPath
-     */
-    private function assertPath(string $path): void
-    {
-        // only allow absolute paths that are not system root
-        if (substr($path, 0, 1) !== '/' || $path === '/') {
-            throw new InvalidPath($path);
-        }
-    }
-
-    /**
-     * @param string $path
      * @return string
-     * @throws InvalidPath
+     * @throws InvalidAbsolutePath
      */
     private function resolvePath(string $path): string
     {
@@ -259,9 +302,21 @@ final class StandardPathStructure implements PathStructure
             $path = $this->rootPath . "/$path";
         }
 
-        $this->assertPath($path);
+        $this->assertValidAbsolutePath($path);
 
         return $path;
+    }
+
+    /**
+     * @param string $path
+     * @throws InvalidAbsolutePath
+     */
+    private function assertValidAbsolutePath(string $path): void
+    {
+        // only allow absolute paths that are not system root
+        if (substr($path, 0, 1) !== '/' || $path === '/') {
+            throw new InvalidAbsolutePath($path);
+        }
     }
 
 }
