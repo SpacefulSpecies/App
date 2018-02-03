@@ -22,7 +22,7 @@ final class StandardContainerBuilder implements ContainerBuilder
     const SLIM_CONFIG_FILE = 'vendor/php-di/slim-bridge/src/config.php';
 
     /** @const string */
-    const APP_CONFIG_FILE = __DIR__ . '/config.php';
+    const APP_CONFIG_FILE = __DIR__ . '/../../config/config.php';
 
 
 
