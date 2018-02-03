@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\Views\Twig;
 
 /**
- * A Twig Slim view controller helper.
+ * A Twig view controller helper.
  */
 abstract class TwigViewController
 {
@@ -32,9 +32,12 @@ abstract class TwigViewController
      * @param array|null        $data = null (default: [])
      * @return ResponseInterface
      */
-    public function render(ResponseInterface $response, string $template, ?array $data = null): ResponseInterface
+    final protected function view(ResponseInterface $response, string $template, ?array $data = null): ResponseInterface
     {
-        return $this->twig->render($response, $template, $data ?? []);
+        $charset = $this->twig->getEnvironment()->getCharset();
+
+        return $this->twig->render($response, $template, $data ?? [])
+            ->withHeader('Content-Type', "text/html; charset=$charset");
     }
 
 }
