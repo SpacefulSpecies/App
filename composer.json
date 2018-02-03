@@ -5,7 +5,13 @@
 
     "autoload": {
         "psr-4": {
-            "Species\\": ["src/", "tests/"]
+            "Species\\": "src/"
+        }
+    },
+
+    "autoload-dev": {
+        "psr-4": {
+            "Species\\": "tests/"
         }
     },
 
