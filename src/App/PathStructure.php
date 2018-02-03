@@ -3,13 +3,13 @@
 namespace Species\App;
 
 /**
- * Path structure interface for the app.
+ * App path structure interface.
  */
 interface PathStructure
 {
 
     /**
-     * An absolute path to the root directory of the app (location of composer, vendor and src dir).
+     * An absolute path to the root directory of the app (location of composer, vendor, src, ...).
      *
      * @return string
      */
@@ -25,7 +25,7 @@ interface PathStructure
     public function getConfigPath(): string;
 
     /**
-     * An absolute path to the directory where static project files are stored.
+     * An absolute path to the directory where static resource files are stored.
      *
      * @return string
      */
@@ -62,51 +62,51 @@ interface PathStructure
 
 
     /**
-     * Get a namespaced path in the config directory.
+     * Get a path inside the config directory.
      *
-     * @param string $namespace
+     * @param string $path
      * @return string
      */
-    public function getConfigPathFor(string $namespace): string;
+    public function getConfigPathFor(string $path): string;
 
     /**
-     * Get a namespaced path in the resource directory.
+     * Get a path inside the resource directory.
      *
-     * @param string $namespace
+     * @param string $path
      * @return string
      */
-    public function getResourcePathFor(string $namespace): string;
+    public function getResourcePathFor(string $path): string;
 
     /**
-     * Get a namespaced path in the web directory.
+     * Get a path inside the web directory.
      *
-     * @param string $namespace
+     * @param string $path
      * @return string
      */
-    public function getWebPathFor(string $namespace): string;
+    public function getWebPathFor(string $path): string;
 
     /**
-     * Get a namespaced path in the var directory.
+     * Get a path inside the var directory.
      *
-     * @param string $namespace
+     * @param string $path
      * @return string
      */
-    public function getVarPathFor(string $namespace): string;
+    public function getVarPathFor(string $path): string;
 
     /**
-     * Get a namespaced path in the cache directory.
+     * Get a path inside the cache directory.
      *
-     * @param string $namespace
+     * @param string $path
      * @return string
      */
-    public function getCachePathFor(string $namespace): string;
+    public function getCachePathFor(string $path): string;
 
     /**
-     * Get a namespaced path in the log directory.
+     * Get a path inside the log directory.
      *
-     * @param string $namespace
+     * @param string $path
      * @return string
      */
-    public function getLogPathFor(string $namespace): string;
+    public function getLogPathFor(string $path): string;
 
 }
