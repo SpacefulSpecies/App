@@ -5,15 +5,14 @@ namespace Species\App;
 use Psr\Container\ContainerInterface;
 
 /**
- * Container builder interface for the app using PHP-DI definitions.
- *
- * @note make sure all required settings and services are in the container for the app!
+ * App container builder interface using PHP-DI definitions.
  */
 interface ContainerBuilder
 {
 
     /**
      * @param mixed $definitions
+     * @see \DI\ContainerBuilder::addDefinitions
      */
     public function addDefinitions($definitions): void;
 
