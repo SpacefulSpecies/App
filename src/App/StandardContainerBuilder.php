@@ -2,38 +2,30 @@
 
 namespace Species\App;
 
+use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\FilesystemCache;
 use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder as DIContainerBuilder;
 
 /**
- * Standard container builder implementation.
- *
- * @todo apc cache for PHP-DI
+ * Standard container builder implementation using PHP-DI.
  */
 final class StandardContainerBuilder implements ContainerBuilder
 {
 
-    /**
-     * Slim config file relative to app root path.
-     *
-     * @const string
-     */
-    const SLIM_CONFIG_FILE = 'vendor/php-di/slim-bridge/src/config.php';
-
     /** @const string */
-    const APP_CONFIG_FILE = __DIR__ . '/../../config/config.php';
+    const CONFIG_PATH = __DIR__ . '/../../config';
 
 
-
-    /** @var DIContainerBuilder */
-    private $builder;
 
     /** @var Environment */
     private $env;
 
     /** @var Paths */
     private $paths;
+
+    /** @var DIContainerBuilder */
+    private $builder;
 
 
 
@@ -60,38 +52,22 @@ final class StandardContainerBuilder implements ContainerBuilder
 
 
     /**
-     * @param Environment $environment
+     * @param Environment $env
      * @param Paths       $paths
      */
-    public function __construct(Environment $environment, Paths $paths)
+    private function __construct(Environment $env, Paths $paths)
     {
-        $this->env = $environment;
+        $this->env = $env;
         $this->paths = $paths;
+        $this->builder = $this->createBuilder();
 
-        $this->builder = new DIContainerBuilder();
-        $this->builder->useAutowiring(true);
-        $this->builder->useAnnotations(false);
-        $this->builder->ignorePhpDocErrors(true);
-
-        if ($this->env->hasCaching()) {
-            $cachePath = $paths->getCachePathFor($this->env->getName() . '/app.container');
-            $this->builder->setDefinitionCache(new FilesystemCache($cachePath));
-            $this->builder->writeProxiesToFile(true, "$cachePath/container_proxies.cache");
-        }
-
-        $this->addDefinitions([Environment::class => $this->env, Paths::class => $this->paths]);
-
-        $this->provideSlimConfig();
-        $this->provideAppConfig();
+        $this->addDefinitions([Environment::class => $env, Paths::class => $paths]);
+        $this->addDefinitionsFromPath(self::CONFIG_PATH);
+        $this->addDefinitionsFromPath($paths->getConfigPath());
+        $this->addDefinitionsFromPath($paths->getConfigPathFor("$env"));
     }
 
 
-
-    /** @inheritdoc */
-    public function addDefinitions($definitions): void
-    {
-        $this->builder->addDefinitions($definitions);
-    }
 
     /** @inheritdoc */
     public function build(): ContainerInterface
@@ -102,45 +78,49 @@ final class StandardContainerBuilder implements ContainerBuilder
 
 
     /**
-     * Provide Slim settings and services.
+     * @param mixed $definitions
+     * @see \DI\ContainerBuilder::addDefinitions()
      */
-    private function provideSlimConfig(): void
+    public function addDefinitions($definitions): void
     {
-        // slim config
-        $this->addDefinitions($this->paths->getRootPath() . '/' . self::SLIM_CONFIG_FILE);
-
-        // slim router caching
-        $routerCacheFile = false;
-        if ($this->env->hasCaching()) {
-            $routerCacheFile = $this->paths->getCachePathFor($this->env->getName() . '/app.router');
-        }
-
-        // override slim settings
-        $this->addDefinitions([
-            'settings.displayErrorDetails' => $this->env->inDebug(),
-            'settings.routerCacheFile' => $routerCacheFile,
-        ]);
+        $this->builder->addDefinitions($definitions);
     }
 
     /**
-     * Provide app settings and services.
+     * @param string $path
      */
-    private function provideAppConfig(): void
+    public function addDefinitionsFromPath(string $path): void
     {
-        // app config
-        $this->addDefinitions(self::APP_CONFIG_FILE);
+        $path = rtrim(trim($path), '/');
+        $files = is_dir($path) ? glob("$path/*.php") : [$path];
 
-        // config files
-        $configPath = $this->paths->getConfigPath();
-        foreach (glob("$configPath/*.php") as $file) {
-            $this->addDefinitions($file);
-        }
-
-        // environment specific config files
-        $envConfigPath = $this->paths->getConfigPathFor($this->env->getName());
-        foreach (glob("$envConfigPath/*.php") as $file) {
-            $this->addDefinitions($file);
+        foreach ($files as $file) {
+            $this->builder->addDefinitions($file);
         }
     }
 
+
+
+    /**
+     * @return DIContainerBuilder
+     */
+    private function createBuilder(): DIContainerBuilder
+    {
+        $builder = (new DIContainerBuilder)
+            ->useAutowiring(true)
+            ->useAnnotations(false)
+            ->ignorePhpDocErrors(true);
+
+        if ($this->env->hasCaching()) {
+            if (ini_get('apc.enabled')) {
+                $cache = new ApcuCache();
+            } else {
+                $cache = new FilesystemCache($this->paths->getCachePathFor("{$this->env}/app.container"));
+            }
+            $builder->setDefinitionCache($cache);
+            $builder->writeProxiesToFile(true, $this->paths->getCachePathFor("{$this->env}/app.container.proxies"));
+        }
+
+        return $builder;
+    }
 }
