@@ -6,7 +6,7 @@ use Species\App\Exception\InvalidRootPath;
 use Species\App\Exception\InvalidAbsolutePath;
 
 /**
- * Standard app path structure implementation.
+ * Standard app paths implementation.
  *
  * @note Relative paths will be resolved from the root path.
  */
