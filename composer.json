@@ -4,14 +4,15 @@
     "type": "library",
 
     "autoload": {
+        "classmap": ["src/App.php"],
         "psr-4": {
-            "Species\\": "src/"
+            "Species\\App": "src/App"
         }
     },
 
     "autoload-dev": {
         "psr-4": {
-            "Species\\": "tests/"
+            "Species\\App": "tests/App"
         }
     },
 
