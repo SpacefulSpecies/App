@@ -34,7 +34,8 @@ abstract class TwigViewController
      */
     final protected function view(ResponseInterface $response, string $template, ?array $data = null): ResponseInterface
     {
-        $charset = $this->twig->getEnvironment()->getCharset();
+        // no idea why twig capitalize charset... just revert to lower case.
+        $charset = strtolower($this->twig->getEnvironment()->getCharset());
 
         return $this->twig->render($response, $template, $data ?? [])
             ->withHeader('Content-Type', "text/html; charset=$charset");
