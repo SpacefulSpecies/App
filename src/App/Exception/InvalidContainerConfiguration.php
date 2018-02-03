@@ -11,9 +11,9 @@ final class InvalidContainerConfiguration extends \UnexpectedValueException impl
 {
 
     /**
-     * @param ContainerExceptionInterface $previous
+     * @param \Throwable|null $previous = null
      */
-    public function __construct(ContainerExceptionInterface $previous)
+    public function __construct(?\Throwable $previous = null)
     {
         parent::__construct('', 0, $previous);
     }

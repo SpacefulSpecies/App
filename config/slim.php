@@ -29,6 +29,9 @@ use Species\App\Paths;
 return [
 
     // Default settings
+    'settings.middleware' => [],
+    'settings.routes' => [],
+
     'settings.httpVersion' => '1.1',
     'settings.responseChunkSize' => 4096,
     'settings.outputBuffering' => 'append',
