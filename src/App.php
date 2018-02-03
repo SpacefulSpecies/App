@@ -10,7 +10,7 @@ use Slim\App as Slim;
 use Species\App\StandardEnvironment;
 use Species\App\StandardContainerBuilder;
 use Species\App\StandardPathStructure;
-use Species\App\Exception\InvalidContainerConfig;
+use Species\App\Exception\InvalidContainerConfiguration;
 use Species\App\Exception\UnableToRunApp;
 
 /**
@@ -54,7 +54,7 @@ final class App
 
     /**
      * @param ContainerInterface $container
-     * @throws InvalidContainerConfig
+     * @throws InvalidContainerConfiguration
      */
     public function __construct(ContainerInterface $container)
     {
@@ -69,7 +69,7 @@ final class App
                 $this->provideRoutes($container->get('app.routes'));
             }
         } catch (ContainerExceptionInterface $e) {
-            throw new InvalidContainerConfig($e);
+            throw new InvalidContainerConfiguration($e);
         }
     }
 
@@ -92,7 +92,7 @@ final class App
     {
         try {
             $this->slim->run();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new UnableToRunApp($e);
         }
     }
@@ -107,7 +107,7 @@ final class App
     {
         try {
             return $this->slim->process($request, $response);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new UnableToRunApp($e);
         }
     }

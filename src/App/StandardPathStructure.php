@@ -3,7 +3,7 @@
 namespace Species\App;
 
 use Species\App\Exception\InvalidRootPath;
-use Species\App\Exception\InvalidAbsolutePath;
+use Species\App\Exception\InvalidPath;
 
 /**
  * Standard app path structure implementation.
@@ -60,7 +60,7 @@ final class StandardPathStructure implements PathStructure
      * @param string $rootPath
      * @return self
      * @throws InvalidRootPath
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public static function withRootPath(string $rootPath): self
     {
@@ -71,7 +71,7 @@ final class StandardPathStructure implements PathStructure
      * @param string $rootPath
      * @return StandardPathStructure
      * @throws InvalidRootPath
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public static function fromPhpEnvWithRootPath(string $rootPath): self
     {
@@ -97,7 +97,7 @@ final class StandardPathStructure implements PathStructure
      * @param string|null $cachePath    = null (default: '{varPath}/cache')
      * @param string|null $logPath      = null (default: '{varPath}/logs')
      * @throws InvalidRootPath
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     private function __construct(
         string $rootPath,
@@ -211,7 +211,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $configPath
      * @return self
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public function withConfigPath(string $configPath): self
     {
@@ -224,7 +224,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $resourcePath
      * @return self
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public function withResourcePath(string $resourcePath): self
     {
@@ -237,7 +237,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $webPath
      * @return self
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public function withWebPath(string $webPath): self
     {
@@ -250,7 +250,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $varPath
      * @return self
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public function withVarPath(string $varPath): self
     {
@@ -263,7 +263,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $cachePath
      * @return self
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public function withCachePath(string $cachePath): self
     {
@@ -276,7 +276,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $logPath
      * @return self
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     public function withLogPath(string $logPath): self
     {
@@ -291,7 +291,7 @@ final class StandardPathStructure implements PathStructure
     /**
      * @param string $path
      * @return string
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     private function resolvePath(string $path): string
     {
@@ -309,13 +309,13 @@ final class StandardPathStructure implements PathStructure
 
     /**
      * @param string $path
-     * @throws InvalidAbsolutePath
+     * @throws InvalidPath
      */
     private function assertValidAbsolutePath(string $path): void
     {
         // only allow absolute paths that are not system root
         if (substr($path, 0, 1) !== '/' || $path === '/') {
-            throw new InvalidAbsolutePath($path);
+            throw new InvalidPath($path);
         }
     }
 

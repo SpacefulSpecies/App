@@ -3,9 +3,9 @@
 namespace Species\App\Exception;
 
 /**
- * Unable to run app exception.
+ * Exception thrown when the app could not run or process a request.
  */
-final class UnableToRunApp extends AppException
+final class UnableToRunApp extends \RuntimeException implements AppException
 {
 
     /**
