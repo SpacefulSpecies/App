@@ -77,7 +77,7 @@ final class StandardEnvironment implements Environment
         $this->debug = $inDebug;
         $this->cache = $hasCaching;
 
-        $this->assertValidName();
+        $this->guardValidEnvironmentName();
     }
 
 
@@ -111,7 +111,7 @@ final class StandardEnvironment implements Environment
     {
         $new = clone $this;
         $new->name = $name;
-        $new->assertValidName();
+        $new->guardValidEnvironmentName();
 
         return $new;
     }
@@ -167,7 +167,7 @@ final class StandardEnvironment implements Environment
     /**
      * @throws InvalidEnvironmentName
      */
-    private function assertValidName()
+    private function guardValidEnvironmentName()
     {
         if (preg_match('/^[\-\_a-z0-9]+$/i', $this->name) === 0) {
             throw new InvalidEnvironmentName($this->name);
