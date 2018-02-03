@@ -29,12 +29,12 @@ abstract class TwigViewController
     /**
      * @param ResponseInterface $response
      * @param string            $template
-     * @param array             $data = []
+     * @param array|null        $data = null (default: [])
      * @return ResponseInterface
      */
-    public function render(ResponseInterface $response, string $template, array $data = []): ResponseInterface
+    public function render(ResponseInterface $response, string $template, ?array $data = null): ResponseInterface
     {
-        return $this->twig->render($response, $template, $data);
+        return $this->twig->render($response, $template, $data ?? []);
     }
 
 }
