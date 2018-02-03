@@ -17,7 +17,7 @@ return [
     RequestInterface::class => \Di\get('request'),
 
     # Twig
-    Twig::class => function (Environment $env, PathStructure $paths, TwigExtension $extension): Twig {
+    Twig::class => function (Environment $env, Paths $paths, TwigExtension $extension): Twig {
 
         $debug = $env->inDebug();
         $templatePath = $paths->getResourcePathFor('/twig');

@@ -3,7 +3,7 @@
 namespace Species\App\Exception;
 
 /**
- * Exception thrown when an invalid path is given in app path structure.
+ * Exception thrown when an invalid app path is given.
  */
 final class InvalidPath extends \InvalidArgumentException implements AppException
 {

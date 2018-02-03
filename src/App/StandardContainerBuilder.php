@@ -32,41 +32,41 @@ final class StandardContainerBuilder implements ContainerBuilder
     /** @var Environment */
     private $env;
 
-    /** @var PathStructure */
+    /** @var Paths */
     private $paths;
 
 
 
     /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
+     * @param Environment $environment
+     * @param Paths       $paths
      * @return self
      */
-    public static function from(Environment $environment, PathStructure $pathStructure): self
+    public static function from(Environment $environment, Paths $paths): self
     {
-        return new self($environment, $pathStructure);
+        return new self($environment, $paths);
     }
 
     /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
+     * @param Environment $environment
+     * @param Paths       $paths
      * @return ContainerInterface
      */
-    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
+    public static function buildFrom(Environment $environment, Paths $paths): ContainerInterface
     {
-        return self::from($environment, $pathStructure)->build();
+        return self::from($environment, $paths)->build();
     }
 
 
 
     /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
+     * @param Environment $environment
+     * @param Paths       $paths
      */
-    public function __construct(Environment $environment, PathStructure $pathStructure)
+    public function __construct(Environment $environment, Paths $paths)
     {
         $this->env = $environment;
-        $this->paths = $pathStructure;
+        $this->paths = $paths;
 
         $this->builder = new DIContainerBuilder();
         $this->builder->useAutowiring(true);
@@ -74,12 +74,12 @@ final class StandardContainerBuilder implements ContainerBuilder
         $this->builder->ignorePhpDocErrors(true);
 
         if ($this->env->hasCaching()) {
-            $cachePath = $pathStructure->getCachePathFor($this->env->getName() . '/app.container');
+            $cachePath = $paths->getCachePathFor($this->env->getName() . '/app.container');
             $this->builder->setDefinitionCache(new FilesystemCache($cachePath));
             $this->builder->writeProxiesToFile(true, "$cachePath/container_proxies.cache");
         }
 
-        $this->addDefinitions([Environment::class => $this->env, PathStructure::class => $this->paths]);
+        $this->addDefinitions([Environment::class => $this->env, Paths::class => $this->paths]);
 
         $this->provideSlimConfig();
         $this->provideAppConfig();

@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\App as Slim;
 use Species\App\StandardEnvironment;
 use Species\App\StandardContainerBuilder;
-use Species\App\StandardPathStructure;
+use Species\App\StandardPaths;
 use Species\App\Exception\InvalidContainerConfiguration;
 use Species\App\Exception\UnableToRunApp;
 
@@ -36,7 +36,7 @@ final class App
         self::fromContainer(
             StandardContainerBuilder::buildFrom(
                 StandardEnvironment::fromPhpEnv(),
-                StandardPathStructure::withRootPath($rootPath)
+                StandardPaths::withRootPath($rootPath)
             )
         )->run();
     }

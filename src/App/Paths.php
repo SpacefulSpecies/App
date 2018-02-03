@@ -3,9 +3,9 @@
 namespace Species\App;
 
 /**
- * App path structure interface.
+ * App paths interface.
  */
-interface PathStructure
+interface Paths
 {
 
     /**

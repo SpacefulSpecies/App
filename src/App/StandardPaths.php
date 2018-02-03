@@ -10,7 +10,7 @@ use Species\App\Exception\InvalidPath;
  *
  * @note Relative paths will be resolved from the root path.
  */
-final class StandardPathStructure implements PathStructure
+final class StandardPaths implements Paths
 {
 
     /** @const string */
@@ -69,7 +69,7 @@ final class StandardPathStructure implements PathStructure
 
     /**
      * @param string $rootPath
-     * @return StandardPathStructure
+     * @return StandardPaths
      * @throws InvalidRootPath
      * @throws InvalidPath
      */
