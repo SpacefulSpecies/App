@@ -5,7 +5,7 @@ namespace Species\App;
 use Species\App\Exception\InvalidEnvironmentName;
 
 /**
- * Standard environment implementation.
+ * Standard app environment implementation.
  */
 final class StandardEnvironment implements Environment
 {
@@ -32,19 +32,28 @@ final class StandardEnvironment implements Environment
 
 
 
-    /** @return self */
+    /**
+     * @return self
+     * @throws InvalidEnvironmentName
+     */
     public static function forProduction(): self
     {
         return new self('prod', false, true);
     }
 
-    /** @return self */
+    /**
+     * @return self
+     * @throws InvalidEnvironmentName
+     */
     public static function forDevelopment(): self
     {
         return new self('dev', true, false);
     }
 
-    /** @return self */
+    /**
+     * @return self
+     * @throws InvalidEnvironmentName
+     */
     public static function fromPhpEnv(): self
     {
         return new self(
@@ -58,17 +67,17 @@ final class StandardEnvironment implements Environment
 
     /**
      * @param string $name
-     * @param bool   $debug
-     * @param bool   $cache
+     * @param bool   $inDebug
+     * @param bool   $hasCaching
      * @throws InvalidEnvironmentName
      */
-    public function __construct(string $name, bool $debug, bool $cache)
+    public function __construct(string $name, bool $inDebug, bool $hasCaching)
     {
         $this->name = $name;
-        $this->debug = $debug;
-        $this->cache = $cache;
+        $this->debug = $inDebug;
+        $this->cache = $hasCaching;
 
-        $this->guardName();
+        $this->assertValidName();
     }
 
 
@@ -102,7 +111,7 @@ final class StandardEnvironment implements Environment
     {
         $new = clone $this;
         $new->name = $name;
-        $new->guardName();
+        $new->assertValidName();
 
         return $new;
     }
@@ -158,7 +167,7 @@ final class StandardEnvironment implements Environment
     /**
      * @throws InvalidEnvironmentName
      */
-    private function guardName()
+    private function assertValidName()
     {
         if (preg_match('/^[\-\_a-z0-9]+$/i', $this->name) === 0) {
             throw new InvalidEnvironmentName($this->name);
