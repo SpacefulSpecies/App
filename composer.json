@@ -6,14 +6,14 @@
     "autoload": {
         "classmap": ["src/App.php"],
         "psr-4": {
-            "Species\\App": "src/App"
+            "Species\\App\\": "src/App"
         }
     },
 
     "autoload-dev": {
-        "classmap": ["src/AppTest.php"],
+        "classmap": ["tests/AppTest.php"],
         "psr-4": {
-            "Species\\App": "tests/App"
+            "Species\\App\\": "tests/App"
         }
     },
 
