@@ -298,7 +298,7 @@ final class StandardPaths implements Paths
         $path = rtrim(trim($path), '/');
 
         // relative to root path
-        if (substr($path, 0, 1) !== '/') {
+        if ($path{0} !== '/') {
             $path = $this->rootPath . "/$path";
         }
 
@@ -314,7 +314,7 @@ final class StandardPaths implements Paths
     private function assertValidAbsolutePath(string $path): void
     {
         // only allow absolute paths that are not system root
-        if (substr($path, 0, 1) !== '/' || $path === '/') {
+        if ($path{0} !== '/' || $path === '/') {
             throw new InvalidAbsolutePath($path);
         }
     }
