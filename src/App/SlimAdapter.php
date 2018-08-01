@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App as Slim;
 use Species\App\Exception\InvalidContainerConfiguration;
-use Species\App\Exception\UnableToRunApp;
+use Species\App\Exception\AppRuntimeException;
 
 /**
  * Slim app adapter.
@@ -54,7 +54,7 @@ abstract class SlimAdapter implements Application
         try {
             $this->slim->run(false);
         } catch (\Throwable $e) {
-            throw new UnableToRunApp($e);
+            throw AppRuntimeException::withReason($e);
         }
     }
 
@@ -64,7 +64,7 @@ abstract class SlimAdapter implements Application
         try {
             return $this->slim->process($request, $response);
         } catch (\Throwable $e) {
-            throw new UnableToRunApp($e);
+            throw AppRuntimeException::withReason($e);
         }
     }
 

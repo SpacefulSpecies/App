@@ -5,7 +5,7 @@ namespace Species\App;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Species\App\Exception\UnableToRunApp;
+use Species\App\Exception\AppRuntimeException;
 
 /**
  * App interface.
@@ -21,7 +21,7 @@ interface Application
 
 
     /**
-     * @throws UnableToRunApp
+     * @throws AppRuntimeException
      */
     public function run(): void;
 
@@ -29,7 +29,7 @@ interface Application
      * @param ServerRequestInterface $request
      * @param ResponseInterface      $response
      * @return ResponseInterface
-     * @throws UnableToRunApp
+     * @throws AppRuntimeException
      */
     public function process(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
 
