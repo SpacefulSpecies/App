@@ -82,9 +82,10 @@ abstract class SlimAdapter implements Application
 
     /**
      * @param array  $routesConfig
-     * @param string $prefix = ''
+     * @param string $prefix    = ''
+     * @param array  $arguments = []
      */
-    final private function provideRoutes(array $routesConfig, string $prefix = ''): void
+    final private function provideRoutes(array $routesConfig, string $prefix = '', array $arguments = []): void
     {
         $app = $this; // because Slim binds the group closure to itself
         foreach ($routesConfig as $name => $route) {
@@ -94,13 +95,16 @@ abstract class SlimAdapter implements Application
             $methods = $route['methods'] ?? ['GET'];
             $handler = $route['handler'] ?? null;
             $middlewares = $route['middleware'] ?? [];
+            $arguments = array_replace($arguments, $route['arguments'] ?? []);
 
             if ($group !== null) {
-                $stack = $this->slim->group($pattern, function () use ($app, $group, $name) {
-                    $app->provideRoutes($group, "$name.");
+                $stack = $this->slim->group($pattern, function () use ($app, $group, $name, $arguments) {
+                    $app->provideRoutes($group, "$name.", $arguments);
                 });
             } else {
-                $stack = $this->slim->map($methods, $pattern, $handler)->setName($name);
+                $stack = $this->slim->map($methods, $pattern, $handler)
+                    ->setName($name)
+                    ->setArguments($arguments);
             }
 
             foreach ($middlewares as $middleware) {
