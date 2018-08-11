@@ -2,96 +2,71 @@
 
 namespace Species\App;
 
-use Doctrine\Common\Cache\FilesystemCache;
+use DI\Definition\Source\SourceCache;
 use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder as DIContainerBuilder;
 
 /**
- * Standard container builder implementation.
- *
- * @todo apc cache for PHP-DI
+ * Standard container builder implementation using PHP-DI.
  */
 final class StandardContainerBuilder implements ContainerBuilder
 {
 
-    /**
-     * Slim config file relative to app root path.
-     *
-     * @const string
-     */
-    const SLIM_CONFIG_FILE = 'vendor/php-di/slim-bridge/src/config.php';
-
     /** @const string */
-    const APP_CONFIG_FILE = __DIR__ . '/config.php';
+    const CONFIG_PATH = __DIR__ . '/../../config';
 
 
-
-    /** @var DIContainerBuilder */
-    private $builder;
 
     /** @var Environment */
     private $env;
 
-    /** @var PathStructure */
+    /** @var Paths */
     private $paths;
 
+    /** @var DIContainerBuilder */
+    private $builder;
+
 
 
     /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
+     * @param Environment $environment
+     * @param Paths       $paths
      * @return self
      */
-    public static function from(Environment $environment, PathStructure $pathStructure): self
+    public static function from(Environment $environment, Paths $paths): self
     {
-        return new self($environment, $pathStructure);
+        return new self($environment, $paths);
     }
 
     /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
+     * @param Environment $environment
+     * @param Paths       $paths
      * @return ContainerInterface
      */
-    public static function buildFrom(Environment $environment, PathStructure $pathStructure): ContainerInterface
+    public static function buildFrom(Environment $environment, Paths $paths): ContainerInterface
     {
-        return self::from($environment, $pathStructure)->build();
+        return self::from($environment, $paths)->build();
     }
 
 
 
     /**
-     * @param Environment   $environment
-     * @param PathStructure $pathStructure
+     * @param Environment $env
+     * @param Paths       $paths
      */
-    public function __construct(Environment $environment, PathStructure $pathStructure)
+    private function __construct(Environment $env, Paths $paths)
     {
-        $this->env = $environment;
-        $this->paths = $pathStructure;
+        $this->env = $env;
+        $this->paths = $paths;
+        $this->builder = $this->createBuilder();
 
-        $this->builder = new DIContainerBuilder();
-        $this->builder->useAutowiring(true);
-        $this->builder->useAnnotations(false);
-        $this->builder->ignorePhpDocErrors(true);
-
-        if ($this->env->usesCaching()) {
-            $cachePath = $pathStructure->getCachePathFor($this->env->getName() . '/app.container');
-            $this->builder->setDefinitionCache(new FilesystemCache($cachePath));
-            $this->builder->writeProxiesToFile(true, "$cachePath/container_proxies.cache");
-        }
-
-        $this->addDefinitions([Environment::class => $this->env, PathStructure::class => $this->paths]);
-
-        $this->provideSlimConfig();
-        $this->provideAppConfig();
+        $this->addDefinitions([Environment::class => $env, Paths::class => $paths]);
+        $this->addDefinitionsFromPath(self::CONFIG_PATH);
+        $this->addDefinitionsFromPath($paths->getConfigPath());
+        $this->addDefinitionsFromPath($paths->getConfigPathFor("$env"));
     }
 
 
-
-    /** @inheritdoc */
-    public function addDefinitions($definitions): void
-    {
-        $this->builder->addDefinitions($definitions);
-    }
 
     /** @inheritdoc */
     public function build(): ContainerInterface
@@ -102,45 +77,55 @@ final class StandardContainerBuilder implements ContainerBuilder
 
 
     /**
-     * Provide Slim settings and services.
+     * @param mixed $definitions
+     * @see \DI\ContainerBuilder::addDefinitions()
      */
-    private function provideSlimConfig(): void
+    public function addDefinitions($definitions): void
     {
-        // slim config
-        $this->addDefinitions($this->paths->getRootPath() . '/' . self::SLIM_CONFIG_FILE);
-
-        // slim router caching
-        $routerCacheFile = false;
-        if ($this->env->usesCaching()) {
-            $routerCacheFile = $this->paths->getCachePathFor($this->env->getName() . '/app.router');
-        }
-
-        // override slim settings
-        $this->addDefinitions([
-            'settings.displayErrorDetails' => $this->env->inDebug(),
-            'settings.routerCacheFile' => $routerCacheFile,
-        ]);
+        $this->builder->addDefinitions($definitions);
     }
 
     /**
-     * Provide app settings and services.
+     * @param string $path
      */
-    private function provideAppConfig(): void
+    public function addDefinitionsFromPath(string $path): void
     {
-        // app config
-        $this->addDefinitions(self::APP_CONFIG_FILE);
-
-        // config files
-        $configPath = $this->paths->getConfigPath();
-        foreach (glob("$configPath/*.php") as $file) {
-            $this->addDefinitions($file);
+        $path = realpath($path);
+        if (!$path) {
+            return;
         }
 
-        // environment specific config files
-        $envConfigPath = $this->paths->getConfigPathFor($this->env->getName());
-        foreach (glob("$envConfigPath/*.php") as $file) {
-            $this->addDefinitions($file);
+        if (is_dir($path)) {
+            foreach (glob("$path/*.php") as $file) {
+                $this->builder->addDefinitions($file);
+            }
+        } else {
+            $this->builder->addDefinitions($path);
         }
+    }
+
+
+
+    /**
+     * @return DIContainerBuilder
+     */
+    private function createBuilder(): DIContainerBuilder
+    {
+        $builder = (new DIContainerBuilder)
+            ->useAutowiring(true)
+            ->useAnnotations(false)
+            ->ignorePhpDocErrors(true);
+
+        if ($this->env->hasCaching()) {
+            $cachePath = $this->paths->getCachePathFor("{$this->env}/app.container");
+            $builder->enableCompilation("$cachePath.compiled");
+            $builder->writeProxiesToFile(true, "$cachePath.proxies");
+            if (SourceCache::isSupported()) {
+                $builder->enableDefinitionCache();
+            }
+        }
+
+        return $builder;
     }
 
 }

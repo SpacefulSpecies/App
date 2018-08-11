@@ -3,9 +3,9 @@
 namespace Species\App\Exception;
 
 /**
- * Base class for app exceptions.
+ * Interface for app exceptions.
  */
-abstract class AppException extends \Exception
+interface AppException extends \Throwable
 {
 
 }
