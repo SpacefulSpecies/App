@@ -1,7 +1,5 @@
 <?php
 
-namespace Species\App\Config;
-
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Slim\Interfaces\RouterInterface;
@@ -9,8 +7,6 @@ use Slim\Views\Twig as TwigView;
 use Slim\Views\TwigExtension as TwigViewExtension;
 use Species\App\Environment;
 use Species\App\Paths;
-use Twig_Environment;
-use Twig_Extension_Debug;
 
 return [
 

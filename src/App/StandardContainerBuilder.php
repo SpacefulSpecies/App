@@ -2,8 +2,7 @@
 
 namespace Species\App;
 
-use Doctrine\Common\Cache\ApcuCache;
-use Doctrine\Common\Cache\FilesystemCache;
+use DI\Definition\Source\SourceCache;
 use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder as DIContainerBuilder;
 
@@ -118,13 +117,12 @@ final class StandardContainerBuilder implements ContainerBuilder
             ->ignorePhpDocErrors(true);
 
         if ($this->env->hasCaching()) {
-            if ($this->env->hasApcuCache()) {
-                $cache = new ApcuCache();
-            } else {
-                $cache = new FilesystemCache($this->paths->getCachePathFor("{$this->env}/app.container"));
+            $cachePath = $this->paths->getCachePathFor("{$this->env}/app.container");
+            $builder->enableCompilation("$cachePath.compiled");
+            $builder->writeProxiesToFile(true, "$cachePath.proxies");
+            if (SourceCache::isSupported()) {
+                $builder->enableDefinitionCache();
             }
-            $builder->setDefinitionCache($cache);
-            $builder->writeProxiesToFile(true, $this->paths->getCachePathFor("{$this->env}/app.container.proxies"));
         }
 
         return $builder;

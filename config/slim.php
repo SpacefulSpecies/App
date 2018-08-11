@@ -1,14 +1,11 @@
 <?php
 
-namespace Species\App\Config;
-
 use DI\Bridge\Slim\CallableResolver;
 use DI\Bridge\Slim\ControllerInvoker;
 use DI\Container;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Interop\Container\ContainerInterface as ContainerInteropInterface;
 use Invoker\Invoker;
 use Invoker\ParameterResolver\AssociativeArrayResolver;
 use Invoker\ParameterResolver\Container\TypeHintContainerResolver;
@@ -48,7 +45,6 @@ return [
 
     // Aliases
     ContainerInterface::class => \DI\get(Container::class),
-    ContainerInteropInterface::class => \DI\get(Container::class),
 
     RequestInterface::class => \DI\get('request'),
     ServerRequestInterface::class => \DI\get('request'),
@@ -70,15 +66,15 @@ return [
     ],
 
     // Router
-    'router' => \DI\object(Router::class)
+    'router' => \DI\create(Router::class)
         ->method('setContainer', \DI\get(ContainerInterface::class))
         ->method('setCacheFile', \DI\get('settings.routerCacheFile')),
 
     // Error handlers
-    'errorHandler' => \DI\object(Error::class)->constructor(\DI\get('settings.displayErrorDetails')),
-    'phpErrorHandler' => \DI\object(PhpError::class)->constructor(\DI\get('settings.displayErrorDetails')),
-    'notFoundHandler' => \DI\object(NotFound::class),
-    'notAllowedHandler' => \DI\object(NotAllowed::class),
+    'errorHandler' => \DI\create(Error::class)->constructor(\DI\get('settings.displayErrorDetails')),
+    'phpErrorHandler' => \DI\create(PhpError::class)->constructor(\DI\get('settings.displayErrorDetails')),
+    'notFoundHandler' => \DI\create(NotFound::class),
+    'notAllowedHandler' => \DI\create(NotAllowed::class),
 
     // Slim environment
     'environment' => function () {
@@ -86,8 +82,8 @@ return [
     },
 
     // HTTP factory
-    'request' => function (ContainerInterface $c) {
-        return Request::createFromEnvironment($c->get('environment'));
+    'request' => function (ContainerInterface $container) {
+        return Request::createFromEnvironment($container->get('environment'));
     },
 
     'response' => function (ContainerInterface $container) {
@@ -98,9 +94,9 @@ return [
     },
 
     // HTTP handler
-    'foundHandler' => \DI\object(ControllerInvoker::class)->constructor(\DI\get('foundHandler.invoker')),
+    'foundHandler' => \DI\create(ControllerInvoker::class)->constructor(\DI\get('foundHandler.invoker')),
 
-    'foundHandler.invoker' => function (ContainerInteropInterface $container) {
+    'foundHandler.invoker' => function (ContainerInterface $container) {
         $resolvers = [
             // inject parameters by name first.
             new AssociativeArrayResolver,
@@ -113,6 +109,6 @@ return [
     },
 
     // Callable resolver
-    'callableResolver' => \DI\object(CallableResolver::class),
+    'callableResolver' => \DI\autowire(CallableResolver::class),
 
 ];

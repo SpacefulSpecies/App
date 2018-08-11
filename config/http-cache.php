@@ -1,7 +1,5 @@
 <?php
 
-namespace Species\App\Config;
-
 use Psr\Container\ContainerInterface;
 use Slim\HttpCache\Cache as CacheMiddleWare;
 use Slim\HttpCache\CacheProvider;
@@ -27,6 +25,6 @@ return [
 
 
     // Service
-    CacheProvider::class => \DI\object(),
+    CacheProvider::class => \DI\create(),
 
 ];

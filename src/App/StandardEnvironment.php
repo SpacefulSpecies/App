@@ -106,25 +106,6 @@ final class StandardEnvironment implements Environment
         return $this->cache;
     }
 
-    /** @inheritdoc */
-    public function isCommandLine(): bool
-    {
-        return PHP_SAPI === 'cli';
-    }
-
-    /** @inheritdoc */
-    public function hasApcuCache(): bool
-    {
-        if (!extension_loaded('apcu') || ini_get('apc.enabled') === '0') {
-            return false;
-        }
-        if ($this->isCommandLine() && ini_get('apc.enable_cli') === '0') {
-            return false;
-        }
-
-        return true;
-    }
-
 
 
     /**
