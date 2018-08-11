@@ -39,4 +39,16 @@ interface Environment
      */
     public function hasCaching(): bool;
 
+    /**
+     * Whether the app is running in cli.
+     *
+     * @return bool
+     */
+    public function isCommandLine(): bool;
+
+    /**
+     * @return bool
+     */
+    public function hasApcuCache(): bool;
+
 }

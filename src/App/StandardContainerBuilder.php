@@ -118,7 +118,7 @@ final class StandardContainerBuilder implements ContainerBuilder
             ->ignorePhpDocErrors(true);
 
         if ($this->env->hasCaching()) {
-            if (ini_get('apc.enabled')) {
+            if ($this->env->hasApcuCache()) {
                 $cache = new ApcuCache();
             } else {
                 $cache = new FilesystemCache($this->paths->getCachePathFor("{$this->env}/app.container"));
