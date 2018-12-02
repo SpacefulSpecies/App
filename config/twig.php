@@ -4,7 +4,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Slim\Interfaces\RouterInterface;
 use Slim\Views\Twig as TwigView;
-use Slim\Views\TwigExtension as TwigViewExtension;
+use Slim\Views\TwigExtension as RouterTwigExtension;
 use Species\App\Environment;
 use Species\App\Paths;
 
@@ -26,11 +26,13 @@ return [
     'settings.twig.cache' => function (Environment $env, Paths $paths) {
         return $env->hasCaching() ? $paths->getCachePathFor("$env/app.twig") : false;
     },
+    'settings.twig.globals' => [],
+    'settings.twig.extensions' => [],
 
 
 
     // View
-    TwigView::class => function (ContainerInterface $container, Environment $env, TwigViewExtension $extension) {
+    TwigView::class => function (ContainerInterface $container, Environment $env, RouterTwigExtension $routerExtension) {
 
         $twig = new TwigView($container->get('settings.twig.path'), [
             'debug' => $container->get('settings.twig.debug'),
@@ -43,17 +45,28 @@ return [
             'optimizations' => $container->get('settings.twig.optimizations'),
         ]);
 
-        $twig->addExtension($extension);
+        $twig->addExtension($routerExtension);
         if ($env->inDebug()) {
             $twig->addExtension(new Twig_Extension_Debug());
+        }
+
+        foreach ($container->get('settings.twig.globals') as $name => $value) {
+            $twig->getEnvironment()->addGlobal($name, $value);
+        }
+        foreach ($container->get('settings.twig.extensions') as $routerExtension) {
+            if ($routerExtension instanceof \Twig_Extension) {
+                $twig->addExtension($routerExtension);
+            } else {
+                $twig->addExtension($container->get($routerExtension));
+            }
         }
 
         return $twig;
     },
 
-    // View extension
-    TwigViewExtension::class => function (RouterInterface $router, RequestInterface $request) {
-        return new TwigViewExtension($router, $request->getUri());
+    // Router extension
+    RouterTwigExtension::class => function (RouterInterface $router, RequestInterface $request) {
+        return new RouterTwigExtension($router, $request->getUri());
     },
 
     // Environment
