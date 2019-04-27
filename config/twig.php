@@ -7,6 +7,9 @@ use Slim\Views\Twig as TwigView;
 use Slim\Views\TwigExtension as RouterTwigExtension;
 use Species\App\Environment;
 use Species\App\Paths;
+use Twig\Environment as TwigEnvironment;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\DebugExtension;
 
 return [
 
@@ -47,14 +50,14 @@ return [
 
         $twig->addExtension($routerExtension);
         if ($env->inDebug()) {
-            $twig->addExtension(new Twig_Extension_Debug());
+            $twig->addExtension(new DebugExtension());
         }
 
         foreach ($container->get('settings.twig.globals') as $name => $value) {
             $twig->getEnvironment()->addGlobal($name, $value);
         }
         foreach ($container->get('settings.twig.extensions') as $routerExtension) {
-            if ($routerExtension instanceof \Twig_Extension) {
+            if ($routerExtension instanceof AbstractExtension) {
                 $twig->addExtension($routerExtension);
             } else {
                 $twig->addExtension($container->get($routerExtension));
@@ -70,7 +73,7 @@ return [
     },
 
     // Environment
-    Twig_Environment::class => function (TwigView $twigView) {
+    TwigEnvironment::class => function (TwigView $twigView) {
         return $twigView->getEnvironment();
     },
 
