@@ -1,15 +1,11 @@
 <?php
 
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
-use Slim\Interfaces\RouterInterface;
 use Slim\Views\Twig as TwigView;
-use Slim\Views\TwigExtension as RouterTwigExtension;
 use Species\App\Environment;
 use Species\App\Paths;
 use Twig\Environment as TwigEnvironment;
 use Twig\Extension\AbstractExtension;
-use Twig\Extension\DebugExtension;
 
 return [
 
@@ -29,13 +25,17 @@ return [
     'settings.twig.cache' => function (Environment $env, Paths $paths) {
         return $env->hasCaching() ? $paths->getCachePathFor("$env/app.twig") : false;
     },
+
+
+
+    // Globals and extensions
     'settings.twig.globals' => [],
     'settings.twig.extensions' => [],
 
 
 
     // View
-    TwigView::class => function (ContainerInterface $container, Environment $env, RouterTwigExtension $routerExtension) {
+    TwigView::class => function (ContainerInterface $container) {
 
         $twig = new TwigView($container->get('settings.twig.path'), [
             'debug' => $container->get('settings.twig.debug'),
@@ -47,11 +47,6 @@ return [
             'auto_reload' => $container->get('settings.twig.auto_reload'),
             'optimizations' => $container->get('settings.twig.optimizations'),
         ]);
-
-        $twig->addExtension($routerExtension);
-        if ($env->inDebug()) {
-            $twig->addExtension(new DebugExtension());
-        }
 
         foreach ($container->get('settings.twig.globals') as $name => $value) {
             $twig->getEnvironment()->addGlobal($name, $value);
@@ -65,11 +60,6 @@ return [
         }
 
         return $twig;
-    },
-
-    // Router extension
-    RouterTwigExtension::class => function (RouterInterface $router, RequestInterface $request) {
-        return new RouterTwigExtension($router, $request->getUri());
     },
 
     // Environment

@@ -33,7 +33,7 @@ return [
     'settings.httpVersion' => '1.1',
     'settings.responseChunkSize' => 4096,
     'settings.outputBuffering' => 'append',
-    'settings.determineRouteBeforeAppMiddleware' => false,
+    'settings.determineRouteBeforeAppMiddleware' => true,
     'settings.addContentLengthHeader' => true,
     'settings.displayErrorDetails' => function (Environment $env) {
         return $env->inDebug();
