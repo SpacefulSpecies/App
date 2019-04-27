@@ -1,5 +1,6 @@
 <?php
 
+use function DI\create;
 use Psr\Container\ContainerInterface;
 use Slim\HttpCache\Cache as CacheMiddleWare;
 use Slim\HttpCache\CacheProvider;
@@ -25,6 +26,6 @@ return [
 
 
     // Service
-    CacheProvider::class => \DI\create(),
+    CacheProvider::class => create(),
 
 ];
