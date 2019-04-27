@@ -3,7 +3,6 @@
 namespace Species\App;
 
 use Psr\Container\ContainerInterface;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App as Slim;
@@ -35,8 +34,8 @@ abstract class SlimAdapter implements Application
             $this->slim = new Slim($container);
             $this->provideMiddleware($container->get('settings.middleware'));
             $this->provideRoutes($container->get('settings.routes'));
-        } catch (ContainerExceptionInterface|\Throwable $e) {
-            throw new InvalidContainerConfiguration($e);
+        } catch (\Throwable $e) {
+            throw InvalidContainerConfiguration::withReason($e);
         }
     }
 

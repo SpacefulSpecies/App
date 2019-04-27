@@ -5,6 +5,7 @@ namespace Species\App;
 use DI\Definition\Source\SourceCache;
 use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder as DIContainerBuilder;
+use Species\App\Exception\InvalidContainerConfiguration;
 
 /**
  * Standard container builder implementation using PHP-DI.
@@ -71,7 +72,11 @@ final class StandardContainerBuilder implements ContainerBuilder
     /** @inheritdoc */
     public function build(): ContainerInterface
     {
-        return $this->builder->build();
+        try {
+            return $this->builder->build();
+        } catch (\Throwable $e) {
+            throw InvalidContainerConfiguration::withReason($e);
+        }
     }
 
 
