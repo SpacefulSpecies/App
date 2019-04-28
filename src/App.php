@@ -15,7 +15,7 @@ final class App extends SlimAdapter
      * @param string $rootPath
      * @return self
      */
-    public static function withRootPath(string $rootPath): self
+    public static function WithRootPath(string $rootPath): self
     {
         return new self(
             StandardContainerBuilder::BuildFrom(
