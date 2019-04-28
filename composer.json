@@ -18,6 +18,7 @@
         "php-di/php-di": "^6.0",
         "php-di/slim-bridge": "^2.0",
         "psr/log": "^1.1",
+        "aura/session": "^2.1",
 
         "php": "^7.2",
         "ext-json": "*"
