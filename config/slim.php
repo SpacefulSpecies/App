@@ -16,9 +16,11 @@ use Slim\Handlers\Error;
 use Slim\Handlers\NotAllowed;
 use Slim\Handlers\NotFound;
 use Slim\Handlers\PhpError;
+use Slim\Http\Environment as SlimEnvironment;
 use Slim\Http\Headers;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\Uri;
 use Slim\Interfaces\RouterInterface;
 use Slim\Router;
 use Species\App\Environment;
@@ -27,6 +29,10 @@ use Species\App\Paths;
 return [
 
     // Default settings
+    'settings.baseUrl' => function (SlimEnvironment $slimEnvironment) {
+        return Uri::createFromEnvironment($slimEnvironment)->getBaseUrl();
+    },
+
     'settings.middleware' => [],
     'settings.routes' => [],
 
@@ -52,6 +58,8 @@ return [
 
     Router::class => get('router'),
     RouterInterface::class => get('router'),
+
+    SlimEnvironment::class => get('environment'),
 
 
 
@@ -79,7 +87,7 @@ return [
 
     // Slim environment
     'environment' => function () {
-        return new \Slim\Http\Environment($_SERVER);
+        return new SlimEnvironment($_SERVER);
     },
 
     // HTTP factory

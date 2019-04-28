@@ -8,7 +8,9 @@ use Slim\Interfaces\RouteInterface;
 use Slim\Interfaces\RouterInterface;
 use Slim\Views\Twig;
 use Slim\Views\TwigExtension;
+use Species\App\TwigExtension\ReflectionTwigExtension;
 use Twig\Extension\DebugExtension;
+use Twig\Extension\ExtensionInterface;
 
 /**
  * Twig helpers middleware.
@@ -51,12 +53,13 @@ final class TwigHelpersMiddleware
     {
         // debug extension
         if ($this->twig->getEnvironment()->isDebug()) {
-            $this->twig->addExtension(new DebugExtension());
+            $this->addExtension(new DebugExtension());
         }
 
         // route helpers
-        $this->twig->addExtension(new TwigExtension($this->router, $this->baseUrl));
-        $this->addRouteNameToGlobals($request);
+        $this->addExtension(new TwigExtension($this->router, $this->baseUrl));
+        $this->addExtension(new ReflectionTwigExtension());
+        $this->addGlobal('route_name', $this->getRouteName($request));
 
         return $next($request, $response);
     }
@@ -64,14 +67,33 @@ final class TwigHelpersMiddleware
 
 
     /**
-     * @param Request $request
+     * @param ExtensionInterface $extension
      */
-    private function addRouteNameToGlobals(Request $request): void
+    private function addExtension(ExtensionInterface $extension): void
+    {
+        $this->twig->addExtension($extension);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     */
+    private function addGlobal(string $name, $value): void
+    {
+        $this->twig->getEnvironment()->addGlobal($name, $value);
+    }
+
+
+
+    /**
+     * @param Request $request
+     * @return string|null
+     */
+    private function getRouteName(Request $request): ?string
     {
         $route = $request->getAttribute('route');
-        $routeName = $route instanceof RouteInterface ? $route->getName() : '';
 
-        $this->twig->getEnvironment()->addGlobal('route_name', $routeName);
+        return $route instanceof RouteInterface ? $route->getName() : null;
     }
 
 }

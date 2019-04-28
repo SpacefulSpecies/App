@@ -1,8 +1,10 @@
 <?php
 
+use function DI\{autowire, get};
 use Psr\Container\ContainerInterface;
 use Slim\Views\Twig as TwigView;
 use Species\App\Environment;
+use Species\App\Middleware\TwigHelpersMiddleware;
 use Species\App\Paths;
 use Twig\Environment as TwigEnvironment;
 use Twig\Extension\AbstractExtension;
@@ -66,5 +68,8 @@ return [
     TwigEnvironment::class => function (TwigView $twigView) {
         return $twigView->getEnvironment();
     },
+
+    // Twig helper middleware
+    TwigHelpersMiddleware::class => autowire()->constructorParameter('baseUrl', get('settings.baseUrl')),
 
 ];
