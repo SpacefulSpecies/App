@@ -13,7 +13,6 @@ return [
 
     // Default settings
     'settings.twig.charset' => 'utf-8',
-    'settings.twig.base_template_class' => 'Twig_Template',
     'settings.twig.strict_variables' => true,
     'settings.twig.autoescape' => 'html',
     'settings.twig.auto_reload' => null,
@@ -42,7 +41,6 @@ return [
         $twig = new TwigView($container->get('settings.twig.path'), [
             'debug' => $container->get('settings.twig.debug'),
             'charset' => $container->get('settings.twig.charset'),
-            'base_template_class' => $container->get('settings.twig.base_template_class'),
             'strict_variables' => $container->get('settings.twig.strict_variables'),
             'autoescape' => $container->get('settings.twig.autoescape'),
             'cache' => $container->get('settings.twig.cache'),
