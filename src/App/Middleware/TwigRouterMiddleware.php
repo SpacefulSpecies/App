@@ -8,14 +8,11 @@ use Slim\Interfaces\RouteInterface;
 use Slim\Interfaces\RouterInterface;
 use Slim\Views\Twig;
 use Slim\Views\TwigExtension;
-use Species\App\TwigExtension\ReflectionTwigExtension;
-use Twig\Extension\DebugExtension;
-use Twig\Extension\ExtensionInterface;
 
 /**
- * Twig helpers middleware.
+ * Twig router middleware.
  */
-final class TwigHelpersMiddleware
+final class TwigRouterMiddleware
 {
 
     /** @var Twig */
@@ -51,36 +48,10 @@ final class TwigHelpersMiddleware
      */
     public function __invoke(Request $request, Response $response, callable $next): Response
     {
-        // debug extension
-        if ($this->twig->getEnvironment()->isDebug()) {
-            $this->addExtension(new DebugExtension());
-        }
-
-        // route helpers
-        $this->addExtension(new TwigExtension($this->router, $this->baseUrl));
-        $this->addExtension(new ReflectionTwigExtension());
-        $this->addGlobal('route_name', $this->getRouteName($request));
+        $this->twig->getEnvironment()->addGlobal('route_name', $this->getRouteName($request));
+        $this->twig->addExtension(new TwigExtension($this->router, $this->baseUrl));
 
         return $next($request, $response);
-    }
-
-
-
-    /**
-     * @param ExtensionInterface $extension
-     */
-    private function addExtension(ExtensionInterface $extension): void
-    {
-        $this->twig->addExtension($extension);
-    }
-
-    /**
-     * @param string $name
-     * @param mixed  $value
-     */
-    private function addGlobal(string $name, $value): void
-    {
-        $this->twig->getEnvironment()->addGlobal($name, $value);
     }
 
 

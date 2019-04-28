@@ -1,11 +1,13 @@
 <?php
 
-use function DI\{autowire, get};
+use function DI\{autowire, create, get};
 use Psr\Container\ContainerInterface;
 use Slim\Views\Twig as TwigView;
 use Species\App\Environment;
-use Species\App\Middleware\TwigHelpersMiddleware;
+use Species\App\Middleware\TwigDebugMiddleware;
+use Species\App\Middleware\TwigRouterMiddleware;
 use Species\App\Paths;
+use Species\App\TwigExtension\ReflectionTwigExtension;
 use Twig\Environment as TwigEnvironment;
 use Twig\Extension\AbstractExtension;
 
@@ -67,7 +69,11 @@ return [
         return $twigView->getEnvironment();
     },
 
-    // Twig helper middleware
-    TwigHelpersMiddleware::class => autowire()->constructorParameter('baseUrl', get('settings.baseUrl')),
+    // Twig middleware
+    TwigDebugMiddleware::class => autowire(),
+    TwigRouterMiddleware::class => autowire()->constructorParameter('baseUrl', get('settings.baseUrl')),
+
+    // Twig extensions
+    ReflectionTwigExtension::class => create(),
 
 ];
