@@ -41,7 +41,7 @@ final class CsrfTwigExtension extends AbstractExtension
                     '<input type="hidden" name="csrfToken" value="%s">',
                     htmlspecialchars($this->getCsrfToken())
                 );
-            }, ['is_safe' => 'html']),
+            }, ['is_safe' => ['html']]),
 
         ];
     }
