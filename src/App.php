@@ -3,9 +3,7 @@
 namespace Species;
 
 use Species\App\SlimAdapter;
-use Species\App\StandardContainerBuilder;
-use Species\App\StandardEnvironment;
-use Species\App\StandardPaths;
+use Species\App\{StandardContainerBuilder, StandardEnvironment, StandardPaths};
 
 /**
  * Species App.

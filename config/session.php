@@ -1,7 +1,6 @@
 <?php
 
-use function DI\autowire;
-use function DI\create;
+use function DI\{autowire, create};
 use Aura\Session\Session;
 use Aura\Session\SessionFactory;
 use Psr\Container\ContainerInterface;
