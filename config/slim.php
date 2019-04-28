@@ -1,5 +1,6 @@
 <?php
 
+use function DI\{autowire, create, get};
 use DI\Bridge\Slim\CallableResolver;
 use DI\Bridge\Slim\ControllerInvoker;
 use DI\Container;
@@ -15,9 +16,11 @@ use Slim\Handlers\Error;
 use Slim\Handlers\NotAllowed;
 use Slim\Handlers\NotFound;
 use Slim\Handlers\PhpError;
+use Slim\Http\Environment as SlimEnvironment;
 use Slim\Http\Headers;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\Uri;
 use Slim\Interfaces\RouterInterface;
 use Slim\Router;
 use Species\App\Environment;
@@ -26,13 +29,17 @@ use Species\App\Paths;
 return [
 
     // Default settings
+    'settings.baseUrl' => function (SlimEnvironment $slimEnvironment) {
+        return Uri::createFromEnvironment($slimEnvironment)->getBaseUrl();
+    },
+
     'settings.middleware' => [],
     'settings.routes' => [],
 
     'settings.httpVersion' => '1.1',
     'settings.responseChunkSize' => 4096,
     'settings.outputBuffering' => 'append',
-    'settings.determineRouteBeforeAppMiddleware' => false,
+    'settings.determineRouteBeforeAppMiddleware' => true,
     'settings.addContentLengthHeader' => true,
     'settings.displayErrorDetails' => function (Environment $env) {
         return $env->inDebug();
@@ -44,41 +51,43 @@ return [
 
 
     // Aliases
-    ContainerInterface::class => \DI\get(Container::class),
+    ContainerInterface::class => get(Container::class),
 
-    RequestInterface::class => \DI\get('request'),
-    ServerRequestInterface::class => \DI\get('request'),
+    RequestInterface::class => get('request'),
+    ServerRequestInterface::class => get('request'),
 
-    Router::class => \DI\get('router'),
-    RouterInterface::class => \DI\get('router'),
+    Router::class => get('router'),
+    RouterInterface::class => get('router'),
+
+    SlimEnvironment::class => get('environment'),
 
 
 
     // Slim settings
     'settings' => [
-        'httpVersion' => \DI\get('settings.httpVersion'),
-        'responseChunkSize' => \DI\get('settings.responseChunkSize'),
-        'outputBuffering' => \DI\get('settings.outputBuffering'),
-        'determineRouteBeforeAppMiddleware' => \DI\get('settings.determineRouteBeforeAppMiddleware'),
-        'displayErrorDetails' => \DI\get('settings.displayErrorDetails'),
-        'addContentLengthHeader' => \DI\get('settings.addContentLengthHeader'),
-        'routerCacheFile' => \DI\get('settings.routerCacheFile'),
+        'httpVersion' => get('settings.httpVersion'),
+        'responseChunkSize' => get('settings.responseChunkSize'),
+        'outputBuffering' => get('settings.outputBuffering'),
+        'determineRouteBeforeAppMiddleware' => get('settings.determineRouteBeforeAppMiddleware'),
+        'displayErrorDetails' => get('settings.displayErrorDetails'),
+        'addContentLengthHeader' => get('settings.addContentLengthHeader'),
+        'routerCacheFile' => get('settings.routerCacheFile'),
     ],
 
     // Router
-    'router' => \DI\create(Router::class)
-        ->method('setContainer', \DI\get(ContainerInterface::class))
-        ->method('setCacheFile', \DI\get('settings.routerCacheFile')),
+    'router' => create(Router::class)
+        ->method('setContainer', get(ContainerInterface::class))
+        ->method('setCacheFile', get('settings.routerCacheFile')),
 
     // Error handlers
-    'errorHandler' => \DI\create(Error::class)->constructor(\DI\get('settings.displayErrorDetails')),
-    'phpErrorHandler' => \DI\create(PhpError::class)->constructor(\DI\get('settings.displayErrorDetails')),
-    'notFoundHandler' => \DI\create(NotFound::class),
-    'notAllowedHandler' => \DI\create(NotAllowed::class),
+    'errorHandler' => create(Error::class)->constructor(get('settings.displayErrorDetails')),
+    'phpErrorHandler' => create(PhpError::class)->constructor(get('settings.displayErrorDetails')),
+    'notFoundHandler' => create(NotFound::class),
+    'notAllowedHandler' => create(NotAllowed::class),
 
     // Slim environment
     'environment' => function () {
-        return new \Slim\Http\Environment($_SERVER);
+        return new SlimEnvironment($_SERVER);
     },
 
     // HTTP factory
@@ -94,7 +103,7 @@ return [
     },
 
     // HTTP handler
-    'foundHandler' => \DI\create(ControllerInvoker::class)->constructor(\DI\get('foundHandler.invoker')),
+    'foundHandler' => create(ControllerInvoker::class)->constructor(get('foundHandler.invoker')),
 
     'foundHandler.invoker' => function (ContainerInterface $container) {
         $resolvers = [
@@ -109,6 +118,6 @@ return [
     },
 
     // Callable resolver
-    'callableResolver' => \DI\autowire(CallableResolver::class),
+    'callableResolver' => autowire(CallableResolver::class),
 
 ];

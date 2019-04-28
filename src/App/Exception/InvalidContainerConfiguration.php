@@ -11,11 +11,22 @@ final class InvalidContainerConfiguration extends \UnexpectedValueException impl
 {
 
     /**
-     * @param \Throwable|null $previous = null
+     * @param \Throwable $e
+     * @return self
      */
-    public function __construct(?\Throwable $previous = null)
+    public static function WithReason(\Throwable $e): self
     {
-        parent::__construct('', 0, $previous);
+        return new self($e);
+    }
+
+
+
+    /**
+     * @param \Throwable $reason
+     */
+    private function __construct(\Throwable $reason)
+    {
+        parent::__construct('', 0, $reason);
     }
 
 }

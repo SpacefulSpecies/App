@@ -3,9 +3,7 @@
 namespace Species;
 
 use Species\App\SlimAdapter;
-use Species\App\StandardContainerBuilder;
-use Species\App\StandardEnvironment;
-use Species\App\StandardPaths;
+use Species\App\{StandardContainerBuilder, StandardEnvironment, StandardPaths};
 
 /**
  * Species App.
@@ -20,9 +18,9 @@ final class App extends SlimAdapter
     public static function withRootPath(string $rootPath): self
     {
         return new self(
-            StandardContainerBuilder::buildFrom(
-                StandardEnvironment::fromPhpEnv(),
-                StandardPaths::fromPhpEnvWithRootPath($rootPath)
+            StandardContainerBuilder::BuildFrom(
+                StandardEnvironment::FromPhpEnv(),
+                StandardPaths::FromPhpEnvWithRootPath($rootPath)
             )
         );
     }
