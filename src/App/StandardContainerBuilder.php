@@ -34,7 +34,7 @@ final class StandardContainerBuilder implements ContainerBuilder
      * @param Paths       $paths
      * @return self
      */
-    public static function from(Environment $environment, Paths $paths): self
+    public static function From(Environment $environment, Paths $paths): self
     {
         return new self($environment, $paths);
     }
@@ -44,9 +44,9 @@ final class StandardContainerBuilder implements ContainerBuilder
      * @param Paths       $paths
      * @return ContainerInterface
      */
-    public static function buildFrom(Environment $environment, Paths $paths): ContainerInterface
+    public static function BuildFrom(Environment $environment, Paths $paths): ContainerInterface
     {
-        return self::from($environment, $paths)->build();
+        return self::From($environment, $paths)->build();
     }
 
 
@@ -75,7 +75,7 @@ final class StandardContainerBuilder implements ContainerBuilder
         try {
             return $this->builder->build();
         } catch (\Throwable $e) {
-            throw InvalidContainerConfiguration::withReason($e);
+            throw InvalidContainerConfiguration::WithReason($e);
         }
     }
 

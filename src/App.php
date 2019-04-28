@@ -20,9 +20,9 @@ final class App extends SlimAdapter
     public static function withRootPath(string $rootPath): self
     {
         return new self(
-            StandardContainerBuilder::buildFrom(
-                StandardEnvironment::fromPhpEnv(),
-                StandardPaths::fromPhpEnvWithRootPath($rootPath)
+            StandardContainerBuilder::BuildFrom(
+                StandardEnvironment::FromPhpEnv(),
+                StandardPaths::FromPhpEnvWithRootPath($rootPath)
             )
         );
     }

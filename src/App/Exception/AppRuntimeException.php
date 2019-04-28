@@ -12,7 +12,7 @@ final class AppRuntimeException extends \RuntimeException implements AppExceptio
      * @param \Throwable $e
      * @return self
      */
-    public static function withReason(\Throwable $e): self
+    public static function WithReason(\Throwable $e): self
     {
         return new self($e);
     }

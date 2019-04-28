@@ -14,7 +14,7 @@ final class InvalidContainerConfiguration extends \UnexpectedValueException impl
      * @param \Throwable $e
      * @return self
      */
-    public static function withReason(\Throwable $e): self
+    public static function WithReason(\Throwable $e): self
     {
         return new self($e);
     }

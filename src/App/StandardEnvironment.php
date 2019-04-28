@@ -36,7 +36,7 @@ final class StandardEnvironment implements Environment
      * @return self
      * @throws InvalidEnvironmentName
      */
-    public static function forProduction(): self
+    public static function ForProduction(): self
     {
         return new self('prod', false, true);
     }
@@ -45,7 +45,7 @@ final class StandardEnvironment implements Environment
      * @return self
      * @throws InvalidEnvironmentName
      */
-    public static function forDevelopment(): self
+    public static function ForDevelopment(): self
     {
         return new self('dev', true, false);
     }
@@ -54,7 +54,7 @@ final class StandardEnvironment implements Environment
      * @return self
      * @throws InvalidEnvironmentName
      */
-    public static function fromPhpEnv(): self
+    public static function FromPhpEnv(): self
     {
         return new self(
             getenv(self::ENV_KEY_NAME) ?: 'prod',

@@ -35,7 +35,7 @@ abstract class SlimAdapter implements Application
             $this->provideMiddleware($container->get('settings.middleware'));
             $this->provideRoutes($container->get('settings.routes'));
         } catch (\Throwable $e) {
-            throw InvalidContainerConfiguration::withReason($e);
+            throw InvalidContainerConfiguration::WithReason($e);
         }
     }
 
@@ -53,7 +53,7 @@ abstract class SlimAdapter implements Application
         try {
             $this->slim->run(false);
         } catch (\Throwable $e) {
-            throw AppRuntimeException::withReason($e);
+            throw AppRuntimeException::WithReason($e);
         }
     }
 
@@ -63,7 +63,7 @@ abstract class SlimAdapter implements Application
         try {
             return $this->slim->process($request, $response);
         } catch (\Throwable $e) {
-            throw AppRuntimeException::withReason($e);
+            throw AppRuntimeException::WithReason($e);
         }
     }
 

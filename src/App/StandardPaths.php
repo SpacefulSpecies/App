@@ -62,7 +62,7 @@ final class StandardPaths implements Paths
      * @throws InvalidRootPath
      * @throws InvalidAbsolutePath
      */
-    public static function withRootPath(string $rootPath): self
+    public static function WithRootPath(string $rootPath): self
     {
         return new self($rootPath);
     }
@@ -73,7 +73,7 @@ final class StandardPaths implements Paths
      * @throws InvalidRootPath
      * @throws InvalidAbsolutePath
      */
-    public static function fromPhpEnvWithRootPath(string $rootPath): self
+    public static function FromPhpEnvWithRootPath(string $rootPath): self
     {
         return new self(
             $rootPath,
