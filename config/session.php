@@ -1,10 +1,10 @@
 <?php
 
 use function DI\{autowire, create};
-use Aura\Session\Session;
-use Aura\Session\SessionFactory;
+use Aura\Session\{Session, SessionFactory};
 use Psr\Container\ContainerInterface;
 use Species\App\Middleware\CsrfValidationMiddleware;
+use Species\App\TwigExtension\CsrfTwigExtension;
 
 return [
 
@@ -46,7 +46,8 @@ return [
     },
 
 
-    // Csrf validation middleware
+    // Csrf middleware and twig extension
     CsrfValidationMiddleware::class => autowire(),
+    CsrfTwigExtension::class => autowire(),
 
 ];
