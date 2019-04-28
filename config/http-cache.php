@@ -2,8 +2,8 @@
 
 use function DI\create;
 use Psr\Container\ContainerInterface;
-use Slim\HttpCache\Cache as CacheMiddleWare;
-use Slim\HttpCache\CacheProvider;
+use Slim\HttpCache\Cache as HttpCacheMiddleWare;
+use Slim\HttpCache\CacheProvider as HttpCacheProvider;
 
 return [
 
@@ -15,8 +15,8 @@ return [
 
 
     // Middleware
-    CacheMiddleWare::class => function (ContainerInterface $container) {
-        return new CacheMiddleWare(
+    HttpCacheMiddleWare::class => function (ContainerInterface $container) {
+        return new HttpCacheMiddleWare(
             $container->get('settings.httpCache.type'),
             $container->get('settings.httpCache.maxAge'),
             $container->get('settings.httpCache.mustRevalidate')
@@ -26,6 +26,6 @@ return [
 
 
     // Service
-    CacheProvider::class => create(),
+    HttpCacheProvider::class => create(),
 
 ];
